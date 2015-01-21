@@ -1,0 +1,30 @@
+<style>
+.chunk {
+	float: left;
+	width: 20%;
+	list-style: none;
+}
+</style>
+
+
+<h1> index </h1>
+<ul class="chunk">
+	<li ng-repeat="element in users | oneForth:1 ">
+	{{ element.nickname }}
+	</li>
+</ul>
+<ul class="chunk">
+	<li ng-repeat="element in users | oneForth:2 ">
+	{{ element.nickname }}
+	</li>
+</ul>
+<ul class="chunk">
+	<li ng-repeat="element in users | oneForth:3 ">
+	{{ element.nickname }}
+	</li>
+</ul>
+<ul class="chunk">
+	<li ng-repeat="element in users | oneForth:4 ">
+	{{ element.nickname }}
+	</li>
+</ul>
