@@ -4,27 +4,45 @@
 	width: 20%;
 	list-style: none;
 }
+
+.player-list {
+
+	border-top: 2px solid black;
+}
 </style>
 
 
-<h1> index </h1>
+<h2> Lobby </h2>
+
+<div class="player-list">
+<br>
+<button ng-click="proposeGame()"> Propose Game with: </button><br><br>
+<div id="otherPlayers">
 <ul class="chunk">
 	<li ng-repeat="element in users | oneForth:1 ">
-	{{ element.nickname }}
+	<input type="checkbox" name="player" id="{{element.id}}"> {{ element.nickname }}
 	</li>
 </ul>
 <ul class="chunk">
 	<li ng-repeat="element in users | oneForth:2 ">
-	{{ element.nickname }}
+	<input type="checkbox" name="player" id="{{element.id}}"> {{ element.nickname }}
 	</li>
 </ul>
 <ul class="chunk">
 	<li ng-repeat="element in users | oneForth:3 ">
-	{{ element.nickname }}
+	<input type="checkbox" name="player" id="{{element.id}}"> {{ element.nickname }}
 	</li>
 </ul>
 <ul class="chunk">
 	<li ng-repeat="element in users | oneForth:4 ">
-	{{ element.nickname }}
+	<input type="checkbox" name="player" id="{{element.id}}"> {{ element.nickname }}
 	</li>
 </ul>
+</div>
+</div>
+<script>
+var delay = 900000;
+setTimeout(function(){
+	alert("You have been logged out due to inactivity, please go back to http://localhost:3000/#/ and log in again")
+},delay); 
+</script>

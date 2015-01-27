@@ -14,4 +14,5 @@ class ApplicationController < ActionController::Base
     user = current_user
     user.destroy
   end
+
 end
