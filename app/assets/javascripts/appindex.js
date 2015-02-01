@@ -2,36 +2,42 @@ var app = angular.module("coup", ['ngRoute', 'templates']);
 
 app.controller('MainController', function($scope, $http) {
 	$scope.users = ['fvsrtb'];
+	$scope.otherUsers = [];
 	$scope.getUsers = function() {
 		$http.get("/users").success(function(data){
 			$scope.users = data
 		}) 
 	}
-	$scope.getUsers()
+
+	$scope.getUsers();
+
 
 	$scope.proposeGame = function () {
-		var potentialOpponents = []
-		var opponents = document.getElementById("otherPlayers").children;
-		for (var i=0; i < opponents.length; i++){
-			for (var j=0; j < opponents[i].children.length; j++){
-				var player =  opponents[i].children[j].children.player
-				var id = player.id
-				if (document.getElementById(id).checked){
-					potentialOpponents.push(id)				
-				}
+		var potentialOpponents = [];
+		for (var i=0; i < $scope.users.length; i++){
+			var id = String($scope.users[i].id)
+			
+			if (document.getElementById(id).checked){
+				potentialOpponents.push(id)	
 			}
 		}
-		
-		potentialOpponents = JSON.stringify(potentialOpponents)
-		
+	
 		var myId = document.getElementById("id").innerHTML;
-		
-
 		data = JSON.stringify({"proposerId": myId, "playerIds": potentialOpponents})
 		$http.post('/games/propose', data).
  		success(function() { console.log("success") }).
  		error(function() { console.log("error") });
 	}
+	$scope.findOpponentById = function(id) {
+		for (var i=0; i < $scope.users.length; i++) {
+			if ($scope.users[i].id === id) {
+				return $scope.users[i]
+			}
+		}
+		return "not found"
+	}
+
+
 
 });
 
@@ -63,5 +69,9 @@ app.filter('oneForth', function() {
 	}
 })
 
+var delay = 900000;
+setTimeout(function(){
+	alert("You have been logged out due to inactivity, please go back to http://localhost:3000/#/ and log in again")
+},delay); 
 
 

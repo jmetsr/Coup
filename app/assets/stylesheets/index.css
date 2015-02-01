@@ -1,0 +1,15 @@
+
+.chunk {
+	float: left;
+	width: 20%;
+	list-style: none;
+}
+
+.player-list {
+	margin-top: 10px;
+	border-top: 2px solid black;
+}
+.text {
+
+}
+

@@ -15,5 +15,6 @@
 //= require angular-rails-templates
 //= require_tree ../templates
 //= require pusher.js
+//= require utils.js
 //= require realtime.js
 //= require appindex.js
