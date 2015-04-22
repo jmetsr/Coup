@@ -7,28 +7,30 @@
 
 <div class="player-list">
 <br>
-<button ng-click="proposeGame()"> Propose Game with: </button><br><br>
+<button ng-click="proposeGame()" id="gameProposeButton"> Propose Game with: </button><br><br>
 <div id="otherPlayers">
 <ul class="chunk">
-	<li ng-repeat="element in users | oneForth:1 ">
+	<li ng-repeat="element in otherUsers | oneForth:1 ">
 	<input type="checkbox" name="player" id="{{element.id}}"> {{ element.nickname }}
 	</li>
 </ul>
 <ul class="chunk">
-	<li ng-repeat="element in users | oneForth:2 ">
+	<li ng-repeat="element in otherUsers | oneForth:2 ">
 	<input type="checkbox" name="player" id="{{element.id}}"> {{ element.nickname }}
 	</li>
 </ul>
 <ul class="chunk">
-	<li ng-repeat="element in users | oneForth:3 ">
+	<li ng-repeat="element in otherUsers | oneForth:3 ">
 	<input type="checkbox" name="player" id="{{element.id}}"> {{ element.nickname }}
 	</li>
 </ul>
 <ul class="chunk">
-	<li ng-repeat="element in users | oneForth:4 ">
+	<li ng-repeat="element in otherUsers | oneForth:4 ">
 	<input type="checkbox" name="player" id="{{element.id}}"> {{ element.nickname }}
 	</li>
 </ul>
 </div>
 </div>
 
+
+<respond-to-game class="hidden words"></respond-to-game>

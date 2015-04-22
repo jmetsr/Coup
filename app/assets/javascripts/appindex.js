@@ -1,32 +1,34 @@
-var app = angular.module("coup", ['ngRoute', 'templates']);
 
-app.controller('MainController', function($scope, $http) {
+
+app.controller('MainController', function($scope, serverInteraction) {
 	$scope.users = ['fvsrtb'];
 	$scope.otherUsers = [];
+
 	$scope.getUsers = function() {
-		$http.get("/users").success(function(data){
+		serverInteraction.makeRequestToGetUserData().success(function(data){
 			$scope.users = data
+			$scope.otherUsers = otherPlayers(data)
 		}) 
 	}
-
 	$scope.getUsers();
 
 
 	$scope.proposeGame = function () {
 		var potentialOpponents = [];
-		for (var i=0; i < $scope.users.length; i++){
-			var id = String($scope.users[i].id)
+		for (var i=0; i < $scope.otherUsers.length; i++){
+			var id = String($scope.otherUsers[i].id)
 			
 			if (document.getElementById(id).checked){
 				potentialOpponents.push(id)	
 			}
 		}
 	
-		var myId = document.getElementById("id").innerHTML;
+		var myId = getMyStringId();
 		data = JSON.stringify({"proposerId": myId, "playerIds": potentialOpponents})
-		$http.post('/games/propose', data).
- 		success(function() { console.log("success") }).
- 		error(function() { console.log("error") });
+
+ 		serverInteraction.makeGameProposalRequest(data).
+ 			success(function() { console.log("success") }).
+ 			error(function() { console.log("error") });
 	}
 	$scope.findOpponentById = function(id) {
 		for (var i=0; i < $scope.users.length; i++) {
@@ -36,9 +38,18 @@ app.controller('MainController', function($scope, $http) {
 		}
 		return "not found"
 	}
-
-
-
+	$scope.acceptGame = function() {
+		serverInteraction.accept().
+			success(function(){ console.log("success") }).
+			error(function(){ console.log("error")});
+	}
+	$scope.rejectGame = function() {
+		
+		serverInteraction.reject().
+			success(function(){ console.log("success") }).
+			error(function(){ console.log("error")});
+		
+	}
 });
 
 app.config(function($routeProvider) {
@@ -74,4 +85,17 @@ setTimeout(function(){
 	alert("You have been logged out due to inactivity, please go back to http://localhost:3000/#/ and log in again")
 },delay); 
 
+app.directive('respondToGame', function() {
+	return {
+		restrict: 'E',
+		templateUrl:  'acceptproposal.html',
+
+		link: function(scope, element, attributes){
+			scope.$on("gameProposed", function(){
+				element.removeClass("hidden")
+				document.getElementById("gameProposeButton").setAttribute("disabled", "true")
+			})
+		}
+	}
+});
 

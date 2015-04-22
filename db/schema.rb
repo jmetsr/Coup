@@ -11,10 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150121015751) do
+ActiveRecord::Schema.define(version: 20150422180914) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "game_proposals", force: true do |t|
+    t.integer  "proposer_id"
+    t.integer  "proposed_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "active"
+  end
 
   create_table "users", force: true do |t|
     t.string   "nickname"
@@ -22,6 +30,8 @@ ActiveRecord::Schema.define(version: 20150121015751) do
     t.datetime "updated_at"
     t.string   "session_token"
     t.integer  "time_out_time"
+    t.boolean  "accepted"
+    t.boolean  "rejected"
   end
 
 end

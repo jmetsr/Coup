@@ -2,6 +2,7 @@
 var pusher = new Pusher('05eacba0b0c5fd1dba48');
 var channel = pusher.subscribe('test_channel');
 channel.bind('my_event', function(data) {
+	console.log(data.message)
 	var controllerScope = getScope()
 
 	if (data.message[0] == "d") {
@@ -11,45 +12,58 @@ channel.bind('my_event', function(data) {
 		})
 		controllerScope.$apply()
 	}
+
+
+	else if (data.message[0] == "a") { //They accepted
+		console.log("message of game acceptance received")
+		var accepterId = parseInt(data.message.substring(8))
+		var acceptence = "<br>" + controllerScope.findOpponentById(accepterId).nickname + " accepts";
+		document.getElementById("text").innerHTML += acceptence; 
+		
+	}
+	else if (data.message[0] == "r") { //They rejected
+		console.log("message of game rejection received")
+		var rejecterId = parseInt(data.message.substring(8))
+		var rejection = "<br>" + controllerScope.findOpponentById(rejecterId).nickname + " rejects";
+		document.getElementById("text").innerHTML += rejection; 
+		document.getElementById("gameProposeButton").disabled = false //reinable the button
+
+	
+	}
 	else if (JSON.parse(data.message).hasOwnProperty("nickname")){
 		var user = JSON.parse(data.message)
 		controllerScope.users.push(user)
+		controllerScope.otherUsers.push(user)
 		controllerScope.$apply()
-	}	
+	}
 	else {
 		var proposedById = JSON.parse(data.message).proposerId;
 		var proposedToIds = JSON.parse(data.message).playerIds;
-		var myId = document.getElementById("id").innerHTML;
-		var myNickname = controllerScope.findOpponentById(parseInt(myId)).nickname
+		var myNickname = controllerScope.findOpponentById(getMyId()).nickname
+				
+		var namesList = otherPlayers(proposedToIds).map(function(id){
+		  	return controllerScope.findOpponentById(parseInt(id)).nickname
+		})
 
-		var namesList = proposedToIds.map(function(id){
-			return controllerScope.findOpponentById(parseInt(id)).nickname
-		})
-		namesList = namesList.filter(function(nickname){
-			return nickname != myNickname
-		})
 		var names = namesList.join(" and ")
 
-		console.log(names)
-		if (myId == proposedById && !contains(namesList,myNickname)){
-
+		if (getMyStringId() == proposedById) {
 			var proposingInfo = "<br> you proposed a game to "+names
-			document.getElementById("text").innerHTML += proposingInfo
+			proposeGame(proposingInfo, controllerScope);
 		}
 
-		if (contains(eval(proposedToIds),myId)) {
+
+		if (contains(eval(proposedToIds),getMyStringId())) {
 			var controllerScope = getScope()
 			var proposer = controllerScope.findOpponentById(parseInt(proposedById))
 			if (namesList.length === 0){
 				var proposingInfo = "<br>" + proposer.nickname + " proposed a game to you"
-				document.getElementById("text").innerHTML += proposingInfo		
+				proposeGame(proposingInfo, controllerScope);
 			} else {
 				var proposingInfo = "<br>" + proposer.nickname + " proposed a game to you and " + names;
-				document.getElementById("text").innerHTML += proposingInfo;
-			}
-			
-		}
-				
+				proposeGame(proposingInfo, controllerScope);
+			}	
+		}		
 	}
 });
 

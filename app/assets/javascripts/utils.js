@@ -21,3 +21,29 @@ function getScope(){
     var controllerScope = appScope.$$childHead;
     return controllerScope
 }
+
+function getMyStringId() {
+    return document.getElementById("id").innerHTML
+}
+
+function getMyId() {
+    return parseInt(getMyStringId())
+}
+
+function otherPlayers(playerList) {
+    return playerList.filter(function(user){
+        return (user.id != getMyId()) && (user != getMyStringId())
+    })
+}
+
+function proposeGame(proposingInfo, controllerScope) {
+    document.getElementById("text").innerHTML += proposingInfo; 
+    controllerScope.$broadcast('gameProposed');
+};
+
+
+
+
+
+
+

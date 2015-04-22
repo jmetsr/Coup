@@ -16,5 +16,6 @@
 //= require_tree ../templates
 //= require pusher.js
 //= require utils.js
+//= require server-interaction.js
 //= require realtime.js
 //= require appindex.js

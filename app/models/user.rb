@@ -5,7 +5,46 @@ class User < ActiveRecord::Base
   after_initialize do |user|
       user.set_session_token
       user.set_time_out_time
+      user.rejected = false
+      user.accepted = false
   end
+  has_many(
+    :proposed_games,
+    -> { where(active: true) },
+    :class_name => "GameProposal",
+    primary_key: :id,
+    foreign_key: :proposer_id
+  )
+  has_many(
+    :games_proposed_to,
+    -> { where(active: true) }, 
+    :class_name => "GameProposal",
+    primary_key: :id,
+    foreign_key: :proposed_id
+  )
+
+  has_many(
+    :people_proposed_to,   
+    :through => :proposed_games, 
+    :class_name => "User", 
+    :source => :proposed
+  )
+  has_many(
+    :proposers,
+    :through => :games_proposed_to,
+    :class_name => "User",
+    :source => :proposer
+  )
+  has_many(
+    :co_proposeds,
+    :through => :proposers,
+    :class_name => "User",
+    :source => :people_proposed_to
+  )
+  def potential_opponents
+    return (self.people_proposed_to + self.proposers + self.co_proposeds + [self]).uniq
+  end
+          
 
   def set_session_token
     self.session_token ||= generate_session_token
@@ -17,6 +56,30 @@ class User < ActiveRecord::Base
 
   def reset_session_token
     self.set_session_token
+    self.save
+  end
+
+  def accept
+    self.accepted = true
+    self.save
+  end
+
+  def reject
+    self.proposed_games.each do |game|
+      game.active = false
+      game.save
+    end
+    self.games_proposed_to.each do |game|
+      game.active = false
+      game.save
+    end
+    self.rejected = true
+    self.save
+  end
+
+  def reset
+    self.rejected = false
+    self.accepted = false
     self.save
   end
 
@@ -39,6 +102,7 @@ class User < ActiveRecord::Base
       user.check_time_out
     end
   end
+
 
 
 end
