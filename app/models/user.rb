@@ -5,8 +5,6 @@ class User < ActiveRecord::Base
   after_initialize do |user|
       user.set_session_token
       user.set_time_out_time
-      user.rejected = false
-      user.accepted = false
   end
   has_many(
     :proposed_games,
@@ -56,11 +54,6 @@ class User < ActiveRecord::Base
 
   def reset_session_token
     self.set_session_token
-    self.save
-  end
-
-  def accept
-    self.accepted = true
     self.save
   end
 

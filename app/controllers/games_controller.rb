@@ -21,14 +21,17 @@ class GamesController < ApplicationController
 	end
 
 	def accept
-		current_user.accept
-    current_user.save
+    @user = current_user
+    @user.update_attributes(:accepted => true)
+    @user.save
 
 		Pusher['test_channel'].trigger('my_event', {
           message: "accepts #{current_user.id}"
     })
+
+    puts (current_user.potential_opponents - [current_user]).all? {|user| user.accepted }
     current_user.potential_opponents.each do |user|
-      puts user.nickname
+      puts "#{user.nickname} #{user.accepted}"
     end
 
     render :json => params
