@@ -1,5 +1,3 @@
-
-
 app.controller('MainController', function($scope, serverInteraction) {
 	$scope.users = ['fvsrtb'];
 	$scope.otherUsers = [];
@@ -50,6 +48,12 @@ app.controller('MainController', function($scope, serverInteraction) {
 			error(function(){ console.log("error")});
 		
 	}
+	$scope.startGame = function(data) {
+		serverInteraction.play(data).
+			success(function(){ console.log("success") }).
+			error(function(){ console.log("error")});
+	}
+
 });
 
 app.config(function($routeProvider) {

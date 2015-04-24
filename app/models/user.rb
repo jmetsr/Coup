@@ -39,6 +39,12 @@ class User < ActiveRecord::Base
     :class_name => "User",
     :source => :people_proposed_to
   )
+    belongs_to(
+      :game,
+      :class_name => "Game",
+      primary_key: :id,
+      foreign_key: :game_id
+    )
   def potential_opponents
     return (self.people_proposed_to + self.proposers + self.co_proposeds + [self]).uniq
   end
@@ -67,6 +73,7 @@ class User < ActiveRecord::Base
       game.save
     end
     self.rejected = true
+    self.accepted = false
     self.save
   end
 

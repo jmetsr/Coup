@@ -12,7 +12,15 @@ app.factory('serverInteraction', function($http){
 		},
 		reject: function() {
 			return $http.get('games/reject')
+		},
+		play: function(data) {
+		 	return $http.post('/games', data);
+		},
+		join: function(data){
+			return $http.put('/users', data);
 		}
+
+
 	}
 
 })

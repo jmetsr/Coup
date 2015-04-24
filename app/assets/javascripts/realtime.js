@@ -18,7 +18,20 @@ channel.bind('my_event', function(data) {
 		console.log("message of game acceptance received")
 		var accepterId = parseInt(data.message.substring(8))
 		var acceptence = "<br>" + controllerScope.findOpponentById(accepterId).nickname + " accepts";
-		document.getElementById("text").innerHTML += acceptence; 
+		document.getElementById("text").innerHTML += acceptence;
+		string = data.message
+		if (string.substring(string.indexOf(":")+2)  === "true"){
+			console.log("weve all accepted!!!");
+			if (accepterId === getMyId()){
+				var numberOfPlayers = parseInt(string.substring(string.indexOf("=")+2));
+				controllerScope.startGame(numberOfPlayers);
+			} else {
+				//join the game, problem: how do they know what game to join,
+				//solution: suscribe to another channel after proposal,
+				//but then we must refactor now
+			}
+
+		}
 		
 	}
 	else if (data.message[0] == "r") { //They rejected

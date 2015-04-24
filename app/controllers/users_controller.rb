@@ -31,5 +31,12 @@ class UsersController < ApplicationController
     render :json => "you have been logged out due to inactivity"
   end
 
+  def update
+    @user = User.find(params[:id])
+    @user.update_attributes(params)
+    render :json => @user
+  end
+
+
 
 end

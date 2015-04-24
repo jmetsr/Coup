@@ -7,7 +7,6 @@ class GamesController < ApplicationController
     })
     proposer = User.find(params["proposerId"])
     proposed = User.find(params["playerIds"])
-    puts params
 
     proposed.each do |proposed|
       proposal = GameProposal.new
@@ -25,15 +24,12 @@ class GamesController < ApplicationController
     @user.update_attributes(:accepted => true)
     @user.save
 
+    all_accepted = current_user.potential_opponents.all? {|user| user.accepted}
+    numb_players = current_user.potential_opponents.length
 		Pusher['test_channel'].trigger('my_event', {
-          message: "accepts #{current_user.id}"
+          message: "accepts #{current_user.id}, number_of_opponents = #{numb_players}, everyone accepted: #{all_accepted}"
     })
-
-    puts (current_user.potential_opponents - [current_user]).all? {|user| user.accepted }
-    current_user.potential_opponents.each do |user|
-      puts "#{user.nickname} #{user.accepted}"
-    end
-
+   
     render :json => params
 	end
 
@@ -49,6 +45,17 @@ class GamesController < ApplicationController
     end
     render :json => params
 	end
+  def create
+
+    @game = Game.new(number_of_players: params["_json"].to_i)
+    current_user.game = @game
+    @game.save
+    current_user.save
+    
+    render :json => params
+  end
+
+
 
 
 end
