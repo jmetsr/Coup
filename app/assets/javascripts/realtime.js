@@ -18,18 +18,34 @@ channel.bind('my_event', function(data) {
 		console.log("message of game acceptance received")
 		var accepterId = parseInt(data.message.substring(8))
 		var acceptence = "<br>" + controllerScope.findOpponentById(accepterId).nickname + " accepts";
+		controllerScope.accepter = accepterId
 		document.getElementById("text").innerHTML += acceptence;
 		string = data.message
 		if (string.substring(string.indexOf(":")+2)  === "true"){
 			console.log("weve all accepted!!!");
+
+			console.log(accepterId )
+			console.log(getMyId())
 			if (accepterId === getMyId()){
 				var numberOfPlayers = parseInt(string.substring(string.indexOf("=")+2));
 				controllerScope.startGame(numberOfPlayers);
+				console.log("we accepted it")
 			} else {
+				for (i=0;i<10000000;i++){} //wait for the game to be created
 				//join the game, problem: how do they know what game to join,
-				//solution: suscribe to another channel after proposal,
-				//but then we must refactor now
+				//solution - the game who has it's "current player"'s id match $scope.proposer
+				//or rather $scope.accepter because its the last person to accept who creates the game
+
+				data = JSON.stringify({"id": getMyId(), "accepter_id": controllerScope.accepter})
+				controllerScope.join(data,getMyId())
 			}
+			
+
+			// window.location = "/games/" + controllerScope.game
+			// we will put the above line of code in the join function so it is executed only after
+			// controllerScope.game was properly deffined and not asyncranasly executed before we know which
+			// game to join
+			
 
 		}
 		
@@ -49,7 +65,7 @@ channel.bind('my_event', function(data) {
 		controllerScope.otherUsers.push(user)
 		controllerScope.$apply()
 	}
-	else {
+	else { //a game was proposed
 		var proposedById = JSON.parse(data.message).proposerId;
 		var proposedToIds = JSON.parse(data.message).playerIds;
 		var myNickname = controllerScope.findOpponentById(getMyId()).nickname
@@ -77,6 +93,7 @@ channel.bind('my_event', function(data) {
 				proposeGame(proposingInfo, controllerScope);
 			}	
 		}		
+		controllerScope.proposer = proposedById;
 	}
 });
 

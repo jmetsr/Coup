@@ -32,8 +32,21 @@ class UsersController < ApplicationController
   end
 
   def update
+    puts "entered update action for users"
+    puts "params[:id] is #{params[:id]}."
+    puts "params[:accepter_id] is #{params[:accepter_id]}."
+
     @user = User.find(params[:id])
-    @user.update_attributes(params)
+    game = Game.find_by_current_player_id(params[:accepter_id])
+    puts "game is #{game}."
+    @user.game_id = game.id
+    @user.save
+    game.save
+    render :json => @user
+    puts "left update action for users"
+  end
+  def show
+    @user = User.find(params[:id])
     render :json => @user
   end
 

@@ -1,6 +1,7 @@
 app.controller('MainController', function($scope, serverInteraction) {
 	$scope.users = ['fvsrtb'];
 	$scope.otherUsers = [];
+	
 
 	$scope.getUsers = function() {
 		serverInteraction.makeRequestToGetUserData().success(function(data){
@@ -50,9 +51,30 @@ app.controller('MainController', function($scope, serverInteraction) {
 	}
 	$scope.startGame = function(data) {
 		serverInteraction.play(data).
-			success(function(){ console.log("success") }).
+			success(function(result){ 
+				console.log("success");
+				console.log(result)
+				$scope.game = result.id
+				window.location = "/games/" + $scope.game
+			}).
 			error(function(){ console.log("error")});
 	}
+	$scope.join = function(data,id) {
+		serverInteraction.join(data,id).
+			success(function(result){
+				console.log("success");
+				$scope.game = result.game_id
+				$scope.apply
+				console.log(result)
+				console.log($scope.game)
+				window.location = "/games/" + $scope.game
+			}).
+			error(function(){ console.log("error")});
+	}
+	$scope.proposer = [];
+	$scope.accepter = "dscs";
+	
+
 
 });
 
@@ -60,6 +82,7 @@ app.config(function($routeProvider) {
 	$routeProvider
 	.when("/", { templateUrl: "new.html" })
 	.when("/users", { templateUrl: "index.html" })
+	.when("/play", {templateUrl: "play.html"})
 });
 
 app.filter('oneForth', function() {

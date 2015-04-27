@@ -5,5 +5,6 @@ Rails.application.routes.draw do
   post 'games/propose', :to => 'games#propose'
   get 'games/accept' => 'games#accept', :as => 'accept'
   get 'games/reject' => 'games#reject', :as => 'reject'
-  resources :games, defaults: {format: :json}
+  resources :games, :except => :show, defaults: {format: :json}
+  resources :games, :only => :show
 end

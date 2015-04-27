@@ -10,6 +10,7 @@
 // Read Sprockets README (https://github.com/sstephenson/sprockets#sprockets-directives) for details
 // about supported directives.
 //
+//= require js-routes
 //= require angular.js
 //= require angular-route.js
 //= require angular-rails-templates

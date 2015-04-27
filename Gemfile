@@ -36,6 +36,7 @@ gem 'pusher'
 gem 'em-http-request'
 gem 'ruby-json'
 gem 'angularjs-rails'
+gem "js-routes"
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

@@ -16,8 +16,8 @@ app.factory('serverInteraction', function($http){
 		play: function(data) {
 		 	return $http.post('/games', data);
 		},
-		join: function(data){
-			return $http.put('/users', data);
+		join: function(data,id){
+			return $http.put('/users/' + id, data);
 		}
 
 

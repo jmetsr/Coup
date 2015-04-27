@@ -46,13 +46,19 @@ class GamesController < ApplicationController
     render :json => params
 	end
   def create
-
+    puts "enter the create action for game"
     @game = Game.new(number_of_players: params["_json"].to_i)
+    @game.current_player_id = current_user.id
     current_user.game = @game
     @game.save
     current_user.save
-    
-    render :json => params
+
+    render :json => @game
+    puts "left the create action for game"
+  end
+  def show
+    @game = Game.find(params[:id])
+    render :show
   end
 
 
