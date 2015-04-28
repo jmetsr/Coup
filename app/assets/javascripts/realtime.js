@@ -65,10 +65,7 @@ channel.bind('my_event', function(data) {
 		controllerScope.otherUsers.push(user)
 		controllerScope.$apply()
 	}
-	else if (data.message[0] == "t"){ //a turn ended
-		console.log("meassage of turn ending received")
-		location.reload();
-	}
+
 	else { //a game was proposed
 		var proposedById = JSON.parse(data.message).proposerId;
 		var proposedToIds = JSON.parse(data.message).playerIds;

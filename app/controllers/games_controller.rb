@@ -61,12 +61,23 @@ class GamesController < ApplicationController
   end
   def end_turn
     @game = Game.find(params[:id])
-    if @game.current_player = @game.users.last
-      @game.current_player_id = @game.users.first.id
+    puts "@game.current_player at beigning of method is: #{@game.current_player.nickname}"
+    puts "@game.users.last at begining of method is #{@game.users.last.nickname} "
+    puts "these 2 things are equal: #{@game.current_player == @game.users.last}"
+    
+    if @game.current_player == @game.users.order("created_at").last
+      puts "indeed they are equal"
+      @game.current_player_id = @game.users.order("created_at").first.id
+      puts "and know whe have changed who's turn it is"
 
     else
-      current_player_number = @game.users.index(@game.current_player)
-      @game.current_player_id = @game.users[current_player_number+1].id
+      puts "they are not equal"
+      puts "current player is #{@game.current_player.nickname}"
+      current_player_number = @game.users.order("created_at").index(@game.current_player)
+      puts "current_player_number is set to #{current_player_number}"
+      @game.current_player_id = @game.users.order("created_at")[current_player_number+1].id
+      puts "current player has been set"
+
     end
     @game.save
     puts "It now should be #{@game.current_player.nickname}'s turn"
@@ -77,7 +88,7 @@ class GamesController < ApplicationController
   end
   def take_income
     @game = Game.find(params[:id])
-    if @game.current_player = current_user
+    if @game.current_player == current_user
       @game.current_player.money += 1
       @game.current_player.save
       redirect_to(end_turn_url)

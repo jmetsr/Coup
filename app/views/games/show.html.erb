@@ -10,13 +10,18 @@ It's <%= @game.current_player.nickname %>'s turn
 
 <% end %>
 <br>
+<% if @game.current_player == current_user %>
 <form action="<%= take_income_url %>" method="get">
 <input type="submit" value="Take Income">
 </form>
+<% end %>
 
 <script>
 	var channel = pusher.subscribe('game_channel');
 	channel.bind('game_data', function(data) {
-		
+		if (data.message[0] == "t"){    //a turn ended
+			console.log("meassage of turn ending received")
+			location.reload();
+		}
 	})
 </script>
