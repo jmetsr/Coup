@@ -30,15 +30,15 @@ channel.bind('my_event', function(data) {
 				var numberOfPlayers = parseInt(string.substring(string.indexOf("=")+2));
 				controllerScope.startGame(numberOfPlayers);
 				console.log("we accepted it")
-			} else {
-				for (i=0;i<10000000;i++){} //wait for the game to be created
+			} 
+			for (i=0; i<4000000; i++){} //wait for the game to be created
 				//join the game, problem: how do they know what game to join,
-				//solution - the game who has it's "current player"'s id match $scope.proposer
-				//or rather $scope.accepter because its the last person to accept who creates the game
-
-				data = JSON.stringify({"id": getMyId(), "accepter_id": controllerScope.accepter})
-				controllerScope.join(data,getMyId())
-			}
+				//solution - the game who has it's "current player"'s id match 
+				// $scope.accepter because its the last person to accept who creates the game
+			console.log(getMyId())
+			data = JSON.stringify({"id": getMyId(), "accepter_id": controllerScope.accepter})
+			controllerScope.join(data,getMyId())
+			clearTimeout(logout) //we want to make sure we don't logout users durring games
 			
 
 			// window.location = "/games/" + controllerScope.game
@@ -64,6 +64,10 @@ channel.bind('my_event', function(data) {
 		controllerScope.users.push(user)
 		controllerScope.otherUsers.push(user)
 		controllerScope.$apply()
+	}
+	else if (data.message[0] == "t"){ //a turn ended
+		console.log("meassage of turn ending received")
+		location.reload();
 	}
 	else { //a game was proposed
 		var proposedById = JSON.parse(data.message).proposerId;

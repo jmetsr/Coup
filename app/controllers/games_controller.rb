@@ -37,7 +37,7 @@ class GamesController < ApplicationController
 		current_user.reject
 		Pusher['test_channel'].trigger('my_event', {
           message: "rejects #{current_user.id}"
-    	})
+    })
     
     current_user.proposed_games.each do |proposal|
       proposal.active = false #since the propsal was rejected we label it inactive
@@ -49,9 +49,8 @@ class GamesController < ApplicationController
     puts "enter the create action for game"
     @game = Game.new(number_of_players: params["_json"].to_i)
     @game.current_player_id = current_user.id
-    current_user.game = @game
+    
     @game.save
-    current_user.save
 
     render :json => @game
     puts "left the create action for game"
@@ -60,8 +59,28 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     render :show
   end
+  def end_turn
+    @game = Game.find(params[:id])
+    if @game.current_player = @game.users.last
+      @game.current_player_id = @game.users.first.id
 
-
-
-
+    else
+      current_player_number = @game.users.index(@game.current_player)
+      @game.current_player_id = @game.users[current_player_number+1].id
+    end
+    @game.save
+    puts "It now should be #{@game.current_player.nickname}'s turn"
+    Pusher['game_channel'].trigger('game_data', {
+          message: "turn over"
+    })
+    redirect_to(game_url(@game))
+  end
+  def take_income
+    @game = Game.find(params[:id])
+    if @game.current_player = current_user
+      @game.current_player.money += 1
+      @game.current_player.save
+      redirect_to(end_turn_url)
+    end
+  end
 end

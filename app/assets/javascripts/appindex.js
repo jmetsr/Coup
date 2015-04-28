@@ -21,7 +21,6 @@ app.controller('MainController', function($scope, serverInteraction) {
 				potentialOpponents.push(id)	
 			}
 		}
-	
 		var myId = getMyStringId();
 		data = JSON.stringify({"proposerId": myId, "playerIds": potentialOpponents})
 
@@ -43,19 +42,14 @@ app.controller('MainController', function($scope, serverInteraction) {
 			error(function(){ console.log("error")});
 	}
 	$scope.rejectGame = function() {
-		
 		serverInteraction.reject().
 			success(function(){ console.log("success") }).
 			error(function(){ console.log("error")});
-		
 	}
 	$scope.startGame = function(data) {
 		serverInteraction.play(data).
 			success(function(result){ 
-				console.log("success");
-				console.log(result)
 				$scope.game = result.id
-				window.location = "/games/" + $scope.game
 			}).
 			error(function(){ console.log("error")});
 	}
@@ -65,11 +59,14 @@ app.controller('MainController', function($scope, serverInteraction) {
 				console.log("success");
 				$scope.game = result.game_id
 				$scope.apply
-				console.log(result)
-				console.log($scope.game)
+	
 				window.location = "/games/" + $scope.game
+				$scope.apply
 			}).
-			error(function(){ console.log("error")});
+			error(function(){  //if its an error, wait a bit and try again
+				for (i=0; i<4000000; i++){}
+				$scope.acceptGame()
+			});
 	}
 	$scope.proposer = [];
 	$scope.accepter = "dscs";
@@ -108,7 +105,7 @@ app.filter('oneForth', function() {
 })
 
 var delay = 900000;
-setTimeout(function(){
+logout = setTimeout(function(){
 	alert("You have been logged out due to inactivity, please go back to http://localhost:3000/#/ and log in again")
 },delay); 
 

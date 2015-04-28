@@ -37,6 +37,7 @@ class UsersController < ApplicationController
     puts "params[:accepter_id] is #{params[:accepter_id]}."
 
     @user = User.find(params[:id])
+    @user.money = 2;
     game = Game.find_by_current_player_id(params[:accepter_id])
     puts "game is #{game}."
     @user.game_id = game.id

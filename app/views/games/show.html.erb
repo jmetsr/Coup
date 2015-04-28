@@ -1,2 +1,22 @@
 <h1>Welcome to the game show page</h1>
 <%= @game.id %>
+It's <%= @game.current_player.nickname %>'s turn
+
+<br><br>
+
+
+<% @game.users.each do |user| %>
+<%= user.nickname %> has <%= user.money %> coins <br>
+
+<% end %>
+<br>
+<form action="<%= take_income_url %>" method="get">
+<input type="submit" value="Take Income">
+</form>
+
+<script>
+	var channel = pusher.subscribe('game_channel');
+	channel.bind('game_data', function(data) {
+		
+	})
+</script>
