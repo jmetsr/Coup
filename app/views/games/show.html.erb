@@ -11,9 +11,22 @@ It's <%= @game.current_player.nickname %>'s turn
 <% end %>
 <br>
 <% if @game.current_player == current_user %>
-<form action="<%= take_income_url %>" method="get">
-<input type="submit" value="Take Income">
-</form>
+	<form action="<%= take_income_url %>" method="get">
+	<input type="submit" value="Take Income" id="inc" 
+	onclick="DisableButton(this);
+	getElementById('frg').disabled=true;
+	getElementById('tax').disabled=true;">
+	</form>
+	<form action="<%= take_foreign_aid_url %>" method="get">
+	<input type="submit" value="Take Foreign Aid" id="frg" onclick="DisableButton(this);
+	getElementById('inc').disabled=true;
+	getElementById('tax').disabled=true;" >
+	</form>
+	<form action="<%= tax_url %>" method="get">
+	<input type="submit" value="Take Tax" id="tax" onclick="DisableButton(this);
+	getElementById('inc').disabled=true;
+	getElementById('frg').disabled=true;">
+	</form>
 <% end %>
 
 <script>
@@ -24,4 +37,10 @@ It's <%= @game.current_player.nickname %>'s turn
 			location.reload();
 		}
 	})
+  	function DisableButton(b)
+   	{
+      b.disabled = true;
+      b.value = 'Submitting';
+      b.form.submit();
+   	}
 </script>

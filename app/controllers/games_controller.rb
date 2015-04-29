@@ -88,10 +88,41 @@ class GamesController < ApplicationController
   end
   def take_income
     @game = Game.find(params[:id])
+    puts "we see the game"
     if @game.current_player == current_user
+      puts "we are in the if statement"
       @game.current_player.money += 1
+      puts "we took the money"
+      @game.current_player.save
+      puts "we saved the user"
+      redirect_to(end_turn_url)
+    else
+      fail
+    end
+  end
+  def take_foreign_aid
+    @game = Game.find(params[:id])
+    if @game.current_player == current_user
+      @game.current_player.money += 2
       @game.current_player.save
       redirect_to(end_turn_url)
+    else
+      fail
+    end
+  end
+  def tax
+    @game = Game.find(params[:id])
+    puts "we see the game"
+    if @game.current_player == current_user
+      puts "we are in the if statement"
+      @game.current_player.money += 3
+      puts "we took the money"
+      @game.current_player.save
+      puts "we saved the user"
+
+      redirect_to(end_turn_url)
+    else
+      fail
     end
   end
 end
