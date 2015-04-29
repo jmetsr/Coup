@@ -11,4 +11,5 @@ Rails.application.routes.draw do
   get 'games/take_income/:id' => 'games#take_income', :as => 'take_income'
   get 'games/take_foreign_aid/:id' => 'games#take_foreign_aid', :as => 'take_foreign_aid'
   get 'games/tax/:id' => 'games#tax', :as => 'tax'
+  post 'games/steal/:id' => 'games#steal', :as => 'steal'
 end

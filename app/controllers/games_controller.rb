@@ -46,14 +46,14 @@ class GamesController < ApplicationController
     render :json => params
 	end
   def create
-    puts "enter the create action for game"
+
     @game = Game.new(number_of_players: params["_json"].to_i)
     @game.current_player_id = current_user.id
     
     @game.save
 
     render :json => @game
-    puts "left the create action for game"
+
   end
   def show
     @game = Game.find(params[:id])
@@ -61,26 +61,16 @@ class GamesController < ApplicationController
   end
   def end_turn
     @game = Game.find(params[:id])
-    puts "@game.current_player at beigning of method is: #{@game.current_player.nickname}"
-    puts "@game.users.last at begining of method is #{@game.users.last.nickname} "
-    puts "these 2 things are equal: #{@game.current_player == @game.users.last}"
     
     if @game.current_player == @game.users.order("created_at").last
-      puts "indeed they are equal"
       @game.current_player_id = @game.users.order("created_at").first.id
-      puts "and know whe have changed who's turn it is"
 
     else
-      puts "they are not equal"
-      puts "current player is #{@game.current_player.nickname}"
       current_player_number = @game.users.order("created_at").index(@game.current_player)
-      puts "current_player_number is set to #{current_player_number}"
       @game.current_player_id = @game.users.order("created_at")[current_player_number+1].id
-      puts "current player has been set"
 
     end
     @game.save
-    puts "It now should be #{@game.current_player.nickname}'s turn"
     Pusher['game_channel'].trigger('game_data', {
           message: "turn over"
     })
@@ -88,13 +78,9 @@ class GamesController < ApplicationController
   end
   def take_income
     @game = Game.find(params[:id])
-    puts "we see the game"
     if @game.current_player == current_user
-      puts "we are in the if statement"
       @game.current_player.money += 1
-      puts "we took the money"
       @game.current_player.save
-      puts "we saved the user"
       redirect_to(end_turn_url)
     else
       fail
@@ -114,12 +100,21 @@ class GamesController < ApplicationController
     @game = Game.find(params[:id])
     puts "we see the game"
     if @game.current_player == current_user
-      puts "we are in the if statement"
       @game.current_player.money += 3
-      puts "we took the money"
       @game.current_player.save
-      puts "we saved the user"
-
+      redirect_to(end_turn_url)
+    else
+      fail
+    end
+  end
+  def steal
+    @game = Game.find(params[:id])
+    if @game.current_player == current_user
+      @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
+      @opponent.money -= 2
+      @opponent.save
+      @game.current_player.money += 2
+      @game.current_player.save
       redirect_to(end_turn_url)
     else
       fail

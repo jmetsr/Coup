@@ -13,20 +13,27 @@ It's <%= @game.current_player.nickname %>'s turn
 <% if @game.current_player == current_user %>
 	<form action="<%= take_income_url %>" method="get">
 	<input type="submit" value="Take Income" id="inc" 
-	onclick="DisableButton(this);
-	getElementById('frg').disabled=true;
-	getElementById('tax').disabled=true;">
+	onclick="DisableButton(this);">
 	</form>
 	<form action="<%= take_foreign_aid_url %>" method="get">
-	<input type="submit" value="Take Foreign Aid" id="frg" onclick="DisableButton(this);
-	getElementById('inc').disabled=true;
-	getElementById('tax').disabled=true;" >
+	<input type="submit" value="Take Foreign Aid" id="frg" onclick="DisableButton(this);" >
 	</form>
 	<form action="<%= tax_url %>" method="get">
-	<input type="submit" value="Take Tax" id="tax" onclick="DisableButton(this);
-	getElementById('inc').disabled=true;
-	getElementById('frg').disabled=true;">
+	<input type="submit" value="Take Tax" id="tax" onclick="DisableButton(this);">
 	</form>
+
+
+	<form action="<%= steal_url %>" method="post">
+		<select name="opponent">
+			<% (@game.users - [current_user]).each do |user| %>	
+  			Steal From: <option><%= user.nickname %></option>	<br>
+			<% end %>
+		</select>
+		<input type="submit" value="Steal" id="stl" onclick="DisableButton(this);">
+	</form>
+	</form>
+
+
 <% end %>
 
 <script>
@@ -39,8 +46,16 @@ It's <%= @game.current_player.nickname %>'s turn
 	})
   	function DisableButton(b)
    	{
+   	  var ids = ['inc', 'frg', 'tax', 'stl'];
       b.disabled = true;
       b.value = 'Submitting';
       b.form.submit();
+      for (id in ids){
+      	if (getElementById(id) != b){
+      		getElementById(id).disabled=true;
+      	}
+      }
+
    	}
+
 </script>
