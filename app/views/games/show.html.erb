@@ -20,16 +20,11 @@ and <%= user.money %> coins <br>
 <% end %>
 </ul>
 
-
-
-
-
-
 </div>
 <br>
 
 <div class="input">
-<% if @game.current_player == current_user %>
+<% if @game.current_player == current_user && @game.active_player == current_user%>
 	<form action="<%= take_income_url %>" method="get" class="form">
 	<input type="submit" value="Take Income" id="inc" 
 	onclick="DisableButton(this);">
@@ -84,12 +79,19 @@ and <%= user.money %> coins <br>
 	</div>
 	<div class="hidden" id="reactToAssassin">
 	Which card would you like to have assassinated?
-		<form action="<%= react_to_assassin_url %>" method="post">
+		<form action="<%= react_to_assassin_url %>" method="get">
 			<% current_user.cards.each do |card| %>
 				<input type="radio" name="card" value="<%= card.card_type %>"> 
 				<%= card.card_type %>
 			<% end %><br>
 			<input type="submit" value="SEND">
+
+		</form>
+	</div><br>
+	<div class="hidden" id="claimContessa">
+		Or 
+		<form action="<%= claim_contessa_url %>" method="get">
+			<input type="submit" value="claim contessa">			
 		</form>
 	</div>
 
@@ -117,12 +119,17 @@ Your Cards: <br>
 			console.log("meassage of turn ending received")
 			location.reload();
 		}
+		if (data.message[0] == "c"){    //cards finished dealing
+			location.reload();
+		}
 		if (((JSON.parse(data.message)).action === "coup") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
 		 	document.getElementById('reactToCoup').className = ""
 		}
 		if (((JSON.parse(data.message)).action === "assassin") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
 		 	document.getElementById('reactToAssassin').className = ""
+		 	document.getElementById('claimContessa').className = ""
 		}
+		console.log(data.message)
 		
 	})
   	function DisableButton(b)

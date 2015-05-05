@@ -51,6 +51,7 @@ class GamesController < ApplicationController
     
     @game = Game.new(number_of_players: params["_json"].to_i)
     @game.current_player_id = current_user.id
+    @game.active_player_id = current_user.id
     @game.log = "---#{@game.current_player.nickname}'s turn---."
     
     @game.save
@@ -59,6 +60,7 @@ class GamesController < ApplicationController
 
   end
   def show
+  
     @game = Game.find(params[:id])
     render :show
   end
@@ -73,6 +75,7 @@ class GamesController < ApplicationController
       @game.current_player_id = @game.users.order("created_at")[current_player_number+1].id
 
     end
+    @game.active_player_id = @game.current_player_id
     @game.log += "---#{@game.current_player.nickname}'s turn---."
     @game.save
     Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
@@ -126,6 +129,9 @@ class GamesController < ApplicationController
         @card.save
       end
     end
+    Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: "cards dealt"
+    })
     render :json => @game
     
   end
@@ -134,12 +140,14 @@ class GamesController < ApplicationController
     @game.current_player.save
     @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
     @game.log +=  "#{@game.current_player.nickname} couped #{@opponent.nickname}."
+    @game.active_player_id = @opponent.id
     @game.save
     Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
           message: {action: "coup", opponent: "#{@opponent.nickname}"}.to_json
     })
-    # redirect_to(game_url(@game))
-    render :show
+
+    redirect_to(game_url(@game))
+    #render :show
   end
   def react_to_coup
     @card_to_remove = current_user.cards.select{|x| x.card_type == params['card']}[0]
@@ -152,6 +160,7 @@ class GamesController < ApplicationController
     @game.current_player.save
     @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
     @game.log +=  "#{@game.current_player.nickname} assassinated #{@opponent.nickname}."
+    @game.active_player_id = @opponent.id
     @game.save
     Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
           message: {action: "assassin", opponent: "#{@opponent.nickname}"}.to_json
@@ -162,6 +171,12 @@ class GamesController < ApplicationController
     @card_to_remove = current_user.cards.select{|x| x.card_type == params['card']}[0]
     current_user.cards -= [@card_to_remove]  
     current_user.save
+    redirect_to(end_turn_url)
+  end
+  def claim_contessa
+    @game = Game.find(params[:id])
+    @game.log +=  "#{@game.active_player.nickname} claims contessa."
+    @game.save
     redirect_to(end_turn_url)
   end
 
