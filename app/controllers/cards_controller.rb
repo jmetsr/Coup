@@ -6,6 +6,7 @@ class CardsController < ApplicationController
 		add_card_type("Duke")
 		add_card_type("Contessa")
 		add_card_type("Assassin")
+		add_card_type("Ambassador")
 		
 		redirect_to(deal_cards_url(params[:id]))
 	end

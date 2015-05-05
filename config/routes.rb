@@ -21,5 +21,7 @@ Rails.application.routes.draw do
   post 'games/coup/:id' => 'games#coup', :as => 'coup'
   post 'games/react_to_assassin/:id' => 'games#react_to_assassin', :as => 'react_to_assassin'
   post 'games/assassin/:id' => 'games#assassin', :as => 'assassin'
-  get 'games/claim_contessa/:id' => 'games#claim_contessa', :as => 'claim_contessa'
+  #get 'games/claim_contessa/:id' => 'games#claim_contessa', :as => 'claim_contessa'
+  post 'games/block_action/:id' => 'games#block', :as => 'block'
+  get 'games/resolve_theft/:id' => 'games#resolve_theft', :as => 'resolve_theft'
 end

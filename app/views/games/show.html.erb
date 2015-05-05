@@ -90,9 +90,26 @@ and <%= user.money %> coins <br>
 	</div><br>
 	<div class="hidden" id="claimContessa">
 		Or 
-		<form action="<%= claim_contessa_url %>" method="get">
+		<form action="<%= block_url %>" method="post">
+			<input type="hidden" value="Contessa" name="card">
 			<input type="submit" value="claim contessa">			
 		</form>
+	</div>
+	<div class="hidden" id="reactToTheft">
+		<form action="<%= block_url %>" method="post">
+			<input type="hidden" value="Captin" name="card">
+			<input type="Submit" value="Block with Captin?">		
+		</form>
+		Or
+		<form action="<%= block_url %>" method="post">
+			<input type="hidden" value="Ambassador" name="card">
+			<input type="Submit" value="Block with Ambassador?">		
+		</form>
+		Or 
+		<form action="<%= resolve_theft_url %>" method="get">
+			<input type="Submit" value="Give up the money">		
+		</form>
+
 	</div>
 
 
@@ -128,6 +145,9 @@ Your Cards: <br>
 		if (((JSON.parse(data.message)).action === "assassin") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
 		 	document.getElementById('reactToAssassin').className = ""
 		 	document.getElementById('claimContessa').className = ""
+		}
+		if (((JSON.parse(data.message)).action === "theft") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
+		 	document.getElementById('reactToTheft').className = ""
 		}
 		console.log(data.message)
 		

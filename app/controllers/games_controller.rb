@@ -109,14 +109,22 @@ class GamesController < ApplicationController
       redirect_to(end_turn_url)
   end
   def steal
-
       @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
+      @game.log +=  "#{@game.current_player.nickname} stole from #{@opponent.nickname}."
+      @game.active_player_id = @opponent.id
+      @game.save
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: {action: "theft", opponent: "#{@opponent.nickname}"}.to_json
+       })
+      redirect_to(game_url(@game))
+  end
+  def resolve_theft
+      @game = Game.find(params[:id])
+      @opponent = @game.active_player
       @opponent.money -= 2
       @opponent.save
       @game.current_player.money += 2
       @game.current_player.save
-      @game.log +=  "#{@game.current_player.nickname} stole from #{@opponent.nickname}."
-      @game.save
       redirect_to(end_turn_url)
   end
   def deal_cards
@@ -173,9 +181,11 @@ class GamesController < ApplicationController
     current_user.save
     redirect_to(end_turn_url)
   end
-  def claim_contessa
+  def block
+
     @game = Game.find(params[:id])
-    @game.log +=  "#{@game.active_player.nickname} claims contessa."
+    @game.log +=  "#{@game.active_player.nickname} blocks with #{params[:card]}."
+
     @game.save
     redirect_to(end_turn_url)
   end
