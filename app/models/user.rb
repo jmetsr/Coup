@@ -10,7 +10,6 @@ class User < ActiveRecord::Base
     :proposed_games,
     -> { where(active: true) },
     :class_name => "GameProposal",
-    primary_key: :id,
     foreign_key: :proposer_id
   )
   has_many(
@@ -24,27 +23,27 @@ class User < ActiveRecord::Base
   has_many(
     :people_proposed_to,   
     :through => :proposed_games, 
-    :class_name => "User", 
     :source => :proposed
   )
   has_many(
     :proposers,
     :through => :games_proposed_to,
-    :class_name => "User",
     :source => :proposer
   )
   has_many(
     :co_proposeds,
     :through => :proposers,
-    :class_name => "User",
     :source => :people_proposed_to
   )
-    belongs_to(
-      :game,
-      :class_name => "Game",
-      primary_key: :id,
-      foreign_key: :game_id
-    )
+  belongs_to(
+    :game,
+    foreign_key: :game_id
+  )
+  has_many(
+    :cards,
+    foreign_key: :user_id
+
+  )
   def potential_opponents
     return (self.people_proposed_to + self.proposers + self.co_proposeds + [self]).uniq
   end
@@ -102,8 +101,6 @@ class User < ActiveRecord::Base
       user.check_time_out
     end
   end
-
-
 
 end
 

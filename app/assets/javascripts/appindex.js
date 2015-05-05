@@ -59,13 +59,15 @@ app.controller('MainController', function($scope, serverInteraction) {
 				console.log("success");
 				$scope.game = result.game_id
 				$scope.apply
-	
+				for (i=0; i<50000000; i++){}
 				window.location = "/games/" + $scope.game
 				$scope.apply
+				
 			}).
 			error(function(){  //if its an error, wait a bit and try again
-				for (i=0; i<4000000; i++){}
-				$scope.acceptGame()
+				for (i=0; i<1000000; i++){}
+				$scope.join(data,id)
+			//recursivly call the function
 			});
 	}
 	$scope.proposer = [];

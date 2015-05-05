@@ -35,12 +35,17 @@ channel.bind('my_event', function(data) {
 				//join the game, problem: how do they know what game to join,
 				//solution - the game who has it's "current player"'s id match 
 				// $scope.accepter because its the last person to accept who creates the game
+				//problem - idealy we should not wait a determined amount of time we
+				// should just program it to only join the game if it exists - the
+				//current approach is to open to bugs
+				//maybe we should make it fail when the game is not yet created and then
+				//try again upon failers
 			console.log(getMyId())
 			data = JSON.stringify({"id": getMyId(), "accepter_id": controllerScope.accepter})
 			controllerScope.join(data,getMyId())
 			clearTimeout(logout) //we want to make sure we don't logout users durring games
 			
-
+			
 			// window.location = "/games/" + controllerScope.game
 			// we will put the above line of code in the join function so it is executed only after
 			// controllerScope.game was properly deffined and not asyncranasly executed before we know which

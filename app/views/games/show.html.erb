@@ -1,61 +1,146 @@
-<h1>Welcome to the game show page</h1>
-<%= @game.id %>
-It's <%= @game.current_player.nickname %>'s turn
+<!-- <div ng-app="game">
+<div ng-controller="GameController"> -->
 
-<br><br>
+<!-- <h1>Welcome to the game show page</h1> -->
+<!-- <%= @game.id %> -->
 
+<h2 class="game-title"> Game  </h2>
 
+<div class="game-data">
 <% @game.users.each do |user| %>
-<%= user.nickname %> has <%= user.money %> coins <br>
-
+<%= user.nickname %> has <%= user.cards.length %> cards
+and <%= user.money %> coins <br>
 <% end %>
+
+<ul class="log">
+<% log = @game.log.split('.') %>
+<% fifth_to_last = [log.length-5,0].max %>
+<% log[fifth_to_last..log.length-1].each do |word| %>
+	<li><%= word %></li>
+<% end %>
+</ul>
+
+
+
+
+
+
+</div>
 <br>
+
+<div class="input">
 <% if @game.current_player == current_user %>
-	<form action="<%= take_income_url %>" method="get">
+	<form action="<%= take_income_url %>" method="get" class="form">
 	<input type="submit" value="Take Income" id="inc" 
 	onclick="DisableButton(this);">
 	</form>
-	<form action="<%= take_foreign_aid_url %>" method="get">
+	<form action="<%= take_foreign_aid_url %>" method="get" class="form">
 	<input type="submit" value="Take Foreign Aid" id="frg" onclick="DisableButton(this);" >
 	</form>
-	<form action="<%= tax_url %>" method="get">
+	<form action="<%= tax_url %>" method="get" class="form">
 	<input type="submit" value="Take Tax" id="tax" onclick="DisableButton(this);">
 	</form>
 
+	<% if current_user.money >=  7 %>
+	<form action="<%= coup_url %>" method="post">
+		<select name="opponent">
+			<% (@game.users - [current_user]).each do |user| %>	
+  			Coup: <option><%= user.nickname %></option>	
+			<% end %>
+		</select>
 
+		<input type="submit" value="Coup" id="coup" onclick="DisableButton(this);">
+	</form>
+	<% end %>
+	<% if current_user.money >=  3 %>
+		<form action="<%= assassin_url %>" method="post">
+		<select name="opponent">
+			<% (@game.users - [current_user]).each do |user| %>	
+  			Assassinate: <option><%= user.nickname %></option>	
+			<% end %>
+		</select>
+
+		<input type="submit" value="Assassinate" id="asn" onclick="DisableButton(this);">
+	</form>
+	<% end %>
 	<form action="<%= steal_url %>" method="post">
 		<select name="opponent">
 			<% (@game.users - [current_user]).each do |user| %>	
-  			Steal From: <option><%= user.nickname %></option>	<br>
+  			Steal From: <option><%= user.nickname %></option>	
 			<% end %>
 		</select>
 		<input type="submit" value="Steal" id="stl" onclick="DisableButton(this);">
 	</form>
-	</form>
-
-
 <% end %>
+	<div class="hidden" id="reactToCoup">
+	Which card would you like to have couped?
+		<form action="<%= react_to_coup_url %>" method="post">
+			<% current_user.cards.each do |card| %>
+				<input type="radio" name="card" value="<%= card.card_type %>"> 
+				<%= card.card_type %>
+			<% end %><br>
+			<input type="submit" value="SEND">
+		</form>
+	</div>
+	<div class="hidden" id="reactToAssassin">
+	Which card would you like to have assassinated?
+		<form action="<%= react_to_assassin_url %>" method="post">
+			<% current_user.cards.each do |card| %>
+				<input type="radio" name="card" value="<%= card.card_type %>"> 
+				<%= card.card_type %>
+			<% end %><br>
+			<input type="submit" value="SEND">
+		</form>
+	</div>
+
+
+
+</div>
+
+<div class="your-cards">
+Your Cards: <br>
+<% current_user.cards.each do |card| %>
+<%= card.card_type %>
+<% end %>
+</div>
+
+
+
+	
 
 <script>
-	var channel = pusher.subscribe('game_channel');
-	channel.bind('game_data', function(data) {
+	window["channel: " + <%= @game.id %>] = pusher.subscribe("game_channel_number_" + <%= @game.id %>);
+
+	
+	window["channel: " + <%= @game.id %>].bind('game_data_for_' + <%= @game.id %>, function(data) {
 		if (data.message[0] == "t"){    //a turn ended
 			console.log("meassage of turn ending received")
 			location.reload();
 		}
+		if (((JSON.parse(data.message)).action === "coup") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
+		 	document.getElementById('reactToCoup').className = ""
+		}
+		if (((JSON.parse(data.message)).action === "assassin") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
+		 	document.getElementById('reactToAssassin').className = ""
+		}
+		
 	})
   	function DisableButton(b)
    	{
-   	  var ids = ['inc', 'frg', 'tax', 'stl'];
+   	  var ids = ['inc', 'frg', 'tax', 'stl', 'coup', 'asn'];
       b.disabled = true;
       b.value = 'Submitting';
       b.form.submit();
       for (id in ids){
-      	if (getElementById(id) != b){
-      		getElementById(id).disabled=true;
+      	if (document.getElementById(ids[id]) != b){
+      		document.getElementById(ids[id]).disabled=true;
       	}
       }
 
    	}
 
+
+
 </script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-route.min.js"></script>
+

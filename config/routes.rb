@@ -12,4 +12,13 @@ Rails.application.routes.draw do
   get 'games/take_foreign_aid/:id' => 'games#take_foreign_aid', :as => 'take_foreign_aid'
   get 'games/tax/:id' => 'games#tax', :as => 'tax'
   post 'games/steal/:id' => 'games#steal', :as => 'steal'
+  get 'cards/build_deck/:id' => 'cards#build_deck', :as => 'build_deck' 
+  #even though this adds data to data base it's a get, not a post                               
+  #because there is no data that we have to send - as it always adds
+  #the same stuff to the database each time its called
+  get 'games/deal_cards/:id' => 'games#deal_cards', :as => 'deal_cards'
+  post 'games/react_to_coup/:id' => 'games#react_to_coup', :as => 'react_to_coup'
+  post 'games/coup/:id' => 'games#coup', :as => 'coup'
+  post 'games/react_to_assassin/:id' => 'games#react_to_assassin', :as => 'react_to_assassin'
+  post 'games/assassin/:id' => 'games#assassin', :as => 'assassin'
 end

@@ -1,5 +1,7 @@
 class GamesController < ApplicationController
 
+   before_filter :require_your_turn, only: [:take_income, :take_foreign_aid, :tax, :steal, :coup, :assassin]
+    
 	def propose
 
 	  Pusher['test_channel'].trigger('my_event', {
@@ -46,13 +48,14 @@ class GamesController < ApplicationController
     render :json => params
 	end
   def create
-
+    
     @game = Game.new(number_of_players: params["_json"].to_i)
     @game.current_player_id = current_user.id
+    @game.log = "---#{@game.current_player.nickname}'s turn---."
     
     @game.save
-
-    render :json => @game
+    redirect_to :controller => 'cards', :action => 'build_deck', :id => @game.id
+  
 
   end
   def show
@@ -70,54 +73,96 @@ class GamesController < ApplicationController
       @game.current_player_id = @game.users.order("created_at")[current_player_number+1].id
 
     end
+    @game.log += "---#{@game.current_player.nickname}'s turn---."
     @game.save
-    Pusher['game_channel'].trigger('game_data', {
+    Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
           message: "turn over"
     })
+
     redirect_to(game_url(@game))
   end
   def take_income
-    @game = Game.find(params[:id])
-    if @game.current_player == current_user
+
       @game.current_player.money += 1
+      @game.log += "#{@game.current_player.nickname} took income."
+      @game.save
       @game.current_player.save
       redirect_to(end_turn_url)
-    else
-      fail
-    end
+
   end
   def take_foreign_aid
-    @game = Game.find(params[:id])
-    if @game.current_player == current_user
-      @game.current_player.money += 2
+      
+      @game.current_player.money += 2    
+      @game.log += "#{@game.current_player.nickname} took foreign aid."
+      @game.save
       @game.current_player.save
       redirect_to(end_turn_url)
-    else
-      fail
-    end
   end
   def tax
-    @game = Game.find(params[:id])
-    puts "we see the game"
-    if @game.current_player == current_user
       @game.current_player.money += 3
+      @game.log += "#{@game.current_player.nickname} took tax."
+      @game.save
       @game.current_player.save
       redirect_to(end_turn_url)
-    else
-      fail
-    end
   end
   def steal
-    @game = Game.find(params[:id])
-    if @game.current_player == current_user
+
       @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
       @opponent.money -= 2
       @opponent.save
       @game.current_player.money += 2
       @game.current_player.save
+      @game.log +=  "#{@game.current_player.nickname} stole from #{@opponent.nickname}."
+      @game.save
       redirect_to(end_turn_url)
-    else
-      fail
-    end
   end
+  def deal_cards
+    @game = Game.find(params[:id])
+    @game.users.each do |user|
+      2.times do
+        @card = @game.cards.select{|x| x.is_in_deck}.sample
+        @card.is_in_deck = false
+        @card.user_id = user.id
+        @card.save
+      end
+    end
+    render :json => @game
+    
+  end
+  def coup
+    @game.current_player.money -= 7
+    @game.current_player.save
+    @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
+    @game.log +=  "#{@game.current_player.nickname} couped #{@opponent.nickname}."
+    @game.save
+    Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: {action: "coup", opponent: "#{@opponent.nickname}"}.to_json
+    })
+    # redirect_to(game_url(@game))
+    render :show
+  end
+  def react_to_coup
+    @card_to_remove = current_user.cards.select{|x| x.card_type == params['card']}[0]
+    current_user.cards -= [@card_to_remove]  
+    current_user.save
+    redirect_to(end_turn_url)
+  end
+  def assassin
+    @game.current_player.money -= 3
+    @game.current_player.save
+    @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
+    @game.log +=  "#{@game.current_player.nickname} assassinated #{@opponent.nickname}."
+    @game.save
+    Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: {action: "assassin", opponent: "#{@opponent.nickname}"}.to_json
+    })
+    redirect_to(game_url(@game))
+  end
+  def react_to_assassin
+    @card_to_remove = current_user.cards.select{|x| x.card_type == params['card']}[0]
+    current_user.cards -= [@card_to_remove]  
+    current_user.save
+    redirect_to(end_turn_url)
+  end
+
 end

@@ -11,5 +11,11 @@ class Game < ActiveRecord::Base
  		primary_key: :id,
  		foreign_key: :current_player_id
  	)
+ 	has_many(
+ 		:cards,
+ 		:class_name => "Card",
+ 		primary_key: :id,
+ 		foreign_key: :game_id
+ 	)
  	
 end

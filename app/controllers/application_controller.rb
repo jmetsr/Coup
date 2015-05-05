@@ -14,5 +14,12 @@ class ApplicationController < ActionController::Base
     user = current_user
     user.destroy
   end
+  def require_your_turn
+    @game = Game.find(params[:id])
+    unless @game.current_player == current_user
+      fail
+    end
+  end
+
 
 end
