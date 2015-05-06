@@ -111,6 +111,14 @@ and <%= user.money %> coins <br>
 		</form>
 
 	</div>
+	<div class="hidden" id="reactToForeignAid">
+		<form action="<%= make_into_block_url(current_user.id) %>" method="get"><br>
+
+		Would you like to block with duke?<br>
+		<input type="Submit" value="Block"><br>
+		If not, just wait a few seconds and pretend your thinking about it... 
+		</form>
+	</div>
 
 
 
@@ -139,6 +147,7 @@ Your Cards: <br>
 		if (data.message[0] == "c"){    //cards finished dealing
 			location.reload();
 		}
+
 		if (((JSON.parse(data.message)).action === "coup") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
 		 	document.getElementById('reactToCoup').className = ""
 		}
@@ -148,6 +157,9 @@ Your Cards: <br>
 		}
 		if (((JSON.parse(data.message)).action === "theft") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
 		 	document.getElementById('reactToTheft').className = ""
+		}
+		if (((JSON.parse(data.message)).action === "foreign aid") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>')){
+		 	document.getElementById('reactToForeignAid').className = ""
 		}
 		console.log(data.message)
 		

@@ -65,6 +65,7 @@ class GamesController < ApplicationController
     render :show
   end
   def end_turn
+    puts "end turn"
     @game = Game.find(params[:id])
     
     if @game.current_player == @game.users.order("created_at").last
@@ -95,11 +96,20 @@ class GamesController < ApplicationController
   end
   def take_foreign_aid
       
-      @game.current_player.money += 2    
+        
       @game.log += "#{@game.current_player.nickname} took foreign aid."
       @game.save
-      @game.current_player.save
-      redirect_to(end_turn_url)
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+        message: {action: "foreign aid", opponent: "#{current_user.nickname}"}.to_json
+      })
+      redirect_to(resolution_url())
+  end
+  def resolve_foreign_aid
+    @game = Game.find(params[:id])
+    @game.current_player.money += 2
+    @game.current_player.save
+    redirect_to(end_turn_url)
+
   end
   def tax
       @game.current_player.money += 3
@@ -115,7 +125,7 @@ class GamesController < ApplicationController
       @game.save
       Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
           message: {action: "theft", opponent: "#{@opponent.nickname}"}.to_json
-       })
+      })
       redirect_to(game_url(@game))
   end
   def resolve_theft
@@ -189,5 +199,28 @@ class GamesController < ApplicationController
     @game.save
     redirect_to(end_turn_url)
   end
+  def resolution
+    100000000.times{}
+    @game = Game.find(params[:id])
+    @opponnents = @game.users.select{|x| x != current_user }
+    @opponnents.each do |user|
+      puts user.is_blocking
+    end
+    if @opponnents.all?{|x| !x.is_blocking}
+      redirect_to(resolve_foreign_aid_url(@game))
+    else
+      @blocker = @opponnents.select{|x| x.is_blocking}.sample
+      @game.active_player_id = @blocker.id
+      @game.save
+      redirect_to(block_url(:id => @game.id, :card => 'Duke'))
+    end
+
+  end
 
 end
+
+
+
+
+
+
