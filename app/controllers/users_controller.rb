@@ -14,6 +14,7 @@ class UsersController < ApplicationController
     flash[:errors] = ""
     @user = User.new(user_params)
     @user.is_blocking = false
+    @user.is_allowing = false
     if @user.save
       login(@user)
       Pusher['test_channel'].trigger('my_event', {
@@ -41,12 +42,12 @@ class UsersController < ApplicationController
     game.save
     render :json => @user
   end
-  def make_into_block
-    @user = User.find(params[:id])
-    @user.is_blocking = true
-    @user.save
-    redirect_to(game_url(@user.game_id))
-  end
+  # def make_into_block
+  #   @user = User.find(params[:id])
+  #   @user.is_blocking = true
+  #   @user.save
+  #   redirect_to(game_url(@user.game_id))
+  # end
   def show
     @user = User.find(params[:id])
     render :json => @user

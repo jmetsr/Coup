@@ -95,20 +95,28 @@ class GamesController < ApplicationController
 
   end
   def take_foreign_aid
-      
-        
       @game.log += "#{@game.current_player.nickname} took foreign aid."
       @game.save
       Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
         message: {action: "foreign aid", opponent: "#{current_user.nickname}"}.to_json
       })
-      redirect_to(resolution_url())
+    
+      redirect_to(game_url(@game))
   end
   def resolve_foreign_aid
     @game = Game.find(params[:id])
-    @game.current_player.money += 2
-    @game.current_player.save
-    redirect_to(end_turn_url)
+    @user = current_user
+    @user.is_allowing = true
+    @user.save
+    @opponents = @game.users.select{|player| player != @game.current_player}
+   
+    if @opponents.all?{|player| player.is_allowing }
+      @game.current_player.money += 2
+      @game.current_player.save
+      redirect_to(end_turn_url)
+    else
+      render :show
+    end
 
   end
   def tax
@@ -169,7 +177,9 @@ class GamesController < ApplicationController
   end
   def react_to_coup
     @card_to_remove = current_user.cards.select{|x| x.card_type == params['card']}[0]
-    current_user.cards -= [@card_to_remove]  
+    current_user.cards -= [@card_to_remove]
+    @card_to_remove.is_dead =  true
+    @card_to_remove.save  
     current_user.save
     redirect_to(end_turn_url)
   end
@@ -187,6 +197,8 @@ class GamesController < ApplicationController
   end
   def react_to_assassin
     @card_to_remove = current_user.cards.select{|x| x.card_type == params['card']}[0]
+    @card_to_remove.is_dead =  true
+    @card_to_remove.save
     current_user.cards -= [@card_to_remove]  
     current_user.save
     redirect_to(end_turn_url)
@@ -194,27 +206,16 @@ class GamesController < ApplicationController
   def block
 
     @game = Game.find(params[:id])
-    @game.log +=  "#{@game.active_player.nickname} blocks with #{params[:card]}."
+
+    @player = params[:player]
+    if @player == nil
+      @game.log +=  "#{@game.active_player.nickname} blocks with #{params[:card]}."
+    else
+      @game.log +=  "#{@player} blocks with #{params[:card]}."
+    end
 
     @game.save
     redirect_to(end_turn_url)
-  end
-  def resolution
-    100000000.times{}
-    @game = Game.find(params[:id])
-    @opponnents = @game.users.select{|x| x != current_user }
-    @opponnents.each do |user|
-      puts user.is_blocking
-    end
-    if @opponnents.all?{|x| !x.is_blocking}
-      redirect_to(resolve_foreign_aid_url(@game))
-    else
-      @blocker = @opponnents.select{|x| x.is_blocking}.sample
-      @game.active_player_id = @blocker.id
-      @game.save
-      redirect_to(block_url(:id => @game.id, :card => 'Duke'))
-    end
-
   end
 
 end

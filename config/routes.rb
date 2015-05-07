@@ -25,6 +25,6 @@ Rails.application.routes.draw do
   post 'games/block_action/:id' => 'games#block', :as => 'block'
   get 'games/resolve_theft/:id' => 'games#resolve_theft', :as => 'resolve_theft'
   get 'games/resolve_foreign_aid/:id' => 'games#resolve_foreign_aid', :as => 'resolve_foreign_aid'
-  get 'users/make_into_block/:id' => 'users#make_into_block', :as => 'make_into_block'
-  get 'games/resolution/:id' => 'games#resolution', :as => 'resolution'
+  # get 'users/make_into_block/:id' => 'users#make_into_block', :as => 'make_into_block'
+  # get 'games/resolution/:id' => 'games#resolution', :as => 'resolution'
 end

@@ -14,7 +14,7 @@ class CardsController < ApplicationController
 	private
 	def add_card_type(string)
 		3.times do
-			card = Card.new(game_id: params[:id], is_in_deck: true, card_type: string)
+			card = Card.new(game_id: params[:id], is_in_deck: true, card_type: string, is_dead: false)
 			card.save
 		end
 	end
