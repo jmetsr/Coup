@@ -15,6 +15,7 @@
 //= require angular-route.js
 //= require angular-rails-templates
 //= require_tree ../templates
+//= require jquery-1.11.1.min.js
 //= require pusher.js
 //= require utils.js
 //= require server-interaction.js

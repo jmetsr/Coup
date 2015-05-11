@@ -20,6 +20,10 @@ class ApplicationController < ActionController::Base
       fail
     end
   end
+  def take_money(amount, player)
+    player.money += amount
+    player.save
+  end
 
 
 end

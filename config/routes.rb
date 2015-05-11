@@ -17,9 +17,9 @@ Rails.application.routes.draw do
   #because there is no data that we have to send - as it always adds
   #the same stuff to the database each time its called
   get 'games/deal_cards/:id' => 'games#deal_cards', :as => 'deal_cards'
-  post 'games/react_to_coup/:id' => 'games#react_to_coup', :as => 'react_to_coup'
+ 
   post 'games/coup/:id' => 'games#coup', :as => 'coup'
-  post 'games/react_to_assassin/:id' => 'games#react_to_assassin', :as => 'react_to_assassin'
+ 
   post 'games/assassin/:id' => 'games#assassin', :as => 'assassin'
   #get 'games/claim_contessa/:id' => 'games#claim_contessa', :as => 'claim_contessa'
   post 'games/block_action/:id' => 'games#block', :as => 'block'
@@ -27,4 +27,12 @@ Rails.application.routes.draw do
   get 'games/resolve_foreign_aid/:id' => 'games#resolve_foreign_aid', :as => 'resolve_foreign_aid'
   # get 'users/make_into_block/:id' => 'users#make_into_block', :as => 'make_into_block'
   # get 'games/resolution/:id' => 'games#resolution', :as => 'resolution'
+  post 'games/challenge/:id' =>'games#challenge', :as => 'challenge'
+
+   
+   #post 'games/react_to_coup/:id' => 'games#react_to_coup', :as => 'react_to_coup'
+   #post 'games/react_to_assassin/:id' => 'games#react_to_assassin', :as => 'react_to_assassin'
+
+   post 'games/kill/:id' => 'games#kill', :as => 'kill'
+
 end

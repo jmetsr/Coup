@@ -72,7 +72,7 @@ Revealed Cards:<br>
 <% end %>
 	<div class="hidden" id="reactToCoup">
 	Which card would you like to have couped?
-		<form action="<%= react_to_coup_url %>" method="post">
+		<form action="<%= kill_url %>" method="post">
 			<% current_user.cards.each do |card| %>
 				<input type="radio" name="card" value="<%= card.card_type %>"> 
 				<%= card.card_type %>
@@ -82,7 +82,7 @@ Revealed Cards:<br>
 	</div>
 	<div class="hidden" id="reactToAssassin">
 	Which card would you like to have assassinated?
-		<form action="<%= react_to_assassin_url %>" method="post">
+		<form action="<%= kill_url %>" method="post">
 			<% current_user.cards.each do |card| %>
 				<input type="radio" name="card" value="<%= card.card_type %>"> 
 				<%= card.card_type %>
@@ -91,6 +91,33 @@ Revealed Cards:<br>
 
 		</form>
 	</div><br>
+
+	<div class="hidden" id="reactToFailedChallenge">
+	Your Challnenge Failed!! :( <br>
+	Which card would you like to give up?
+		<form action="<%= kill_url %>" method="post">
+			<% current_user.cards.each do |card| %>
+				<input type="hidden" name="url" id="failedChallengeUrl">
+				<input type="radio" name="card" value="<%= card.card_type %>"> 
+				<%= card.card_type %>
+			<% end %><br>
+			<input type="submit" value="SEND">
+
+		</form>
+	</div><br>
+	<div class="hidden" id="bluffCalled">
+		Your Bluff has been called!! :( <br>
+	Which card would you like to give up?
+		<form action="<%= kill_url %>" method="post">
+			<% current_user.cards.each do |card| %>
+				<input type="radio" name="card" value="<%= card.card_type %>"> 
+				<%= card.card_type %>
+			<% end %><br>
+			<input type="submit" value="SEND">
+
+		</form>
+	</div>
+
 	<div class="hidden" id="claimContessa">
 		Or 
 		<form action="<%= block_url %>" method="post">
@@ -109,6 +136,13 @@ Revealed Cards:<br>
 			<input type="Submit" value="Block with Ambassador?">		
 		</form>
 		Or 
+<!-- 		<form action="<%= challenge_url %>" method="post">
+			<input type="hidden" value="Captin" name="card">
+		
+			<input type="Submit" value="Challenge">
+		</form> -->
+		<button id="challenge" onclick="challenge('Captin', 'theft')">Challenge</button>
+		Or
 		<form action="<%= resolve_theft_url %>" method="get">
 			<input type="Submit" value="Give up the money">		
 		</form>
@@ -134,8 +168,14 @@ Revealed Cards:<br>
 
 <div class="your-cards">
 Your Cards: <br>
-<% current_user.cards.each do |card| %>
-<%= card.card_type %>
+<% if current_user.cards.length > 0 %>
+	<% current_user.cards.each do |card| %>
+		<%= card.card_type %>
+	<% end %>
+<% else %>
+	<script>
+	location.reload();
+	</script>
 <% end %>
 </div>
 
@@ -154,6 +194,8 @@ Your Cards: <br>
 		}
 		if (data.message[0] == "c"){    //cards finished dealing
 			location.reload();
+			console.log("meassage of cards dealing received")
+			
 		}
 
 		if (((JSON.parse(data.message)).action === "coup") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
@@ -168,6 +210,9 @@ Your Cards: <br>
 		}
 		if (((JSON.parse(data.message)).action === "foreign aid") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>')){
 		 	document.getElementById('reactToForeignAid').className = ""
+		}
+		if (((JSON.parse(data.message)).result === "fail") && ((JSON.parse(data.message)).player === "<%= current_user.nickname %>")){
+			document.getElementById('reactToFailedChallenge').className = "";
 		}
 		console.log(data.message)
 		
@@ -185,6 +230,17 @@ Your Cards: <br>
       }
 
    	}
+   	function challenge(card, action){
+   		$.ajax({
+        	type: "POST",
+        	url: "<%= challenge_url %>",
+       		data: {
+         		card: card,
+         		game_action: action
+        	}
+     	 })
+   	}
+
 
 
 

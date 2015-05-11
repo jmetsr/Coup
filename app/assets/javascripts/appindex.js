@@ -62,7 +62,6 @@ app.controller('MainController', function($scope, serverInteraction) {
 				for (i=0; i<50000000; i++){}
 				window.location = "/games/" + $scope.game
 				$scope.apply
-				
 			}).
 			error(function(){  //if its an error, wait a bit and try again
 				for (i=0; i<1000000; i++){}

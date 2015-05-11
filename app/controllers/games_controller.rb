@@ -86,11 +86,11 @@ class GamesController < ApplicationController
     redirect_to(game_url(@game))
   end
   def take_income
-
-      @game.current_player.money += 1
+      take_money(1, @game.current_player)
+      
       @game.log += "#{@game.current_player.nickname} took income."
       @game.save
-      @game.current_player.save
+
       redirect_to(end_turn_url)
 
   end
@@ -111,8 +111,8 @@ class GamesController < ApplicationController
     @opponents = @game.users.select{|player| player != @game.current_player}
    
     if @opponents.all?{|player| player.is_allowing }
-      @game.current_player.money += 2
-      @game.current_player.save
+      take_money(2, @game.current_player)
+
       redirect_to(end_turn_url)
     else
       render :show
@@ -120,10 +120,11 @@ class GamesController < ApplicationController
 
   end
   def tax
-      @game.current_player.money += 3
+      take_money(3, @game.current_player)
+      
       @game.log += "#{@game.current_player.nickname} took tax."
       @game.save
-      @game.current_player.save
+     
       redirect_to(end_turn_url)
   end
   def steal
@@ -139,11 +140,11 @@ class GamesController < ApplicationController
   def resolve_theft
       @game = Game.find(params[:id])
       @opponent = @game.active_player
-      @opponent.money -= 2
-      @opponent.save
-      @game.current_player.money += 2
-      @game.current_player.save
+      take_money(-2, @opponent)
+      take_money(2, @game.current_player)
+
       redirect_to(end_turn_url)
+      #render :show
   end
   def deal_cards
     @game = Game.find(params[:id])
@@ -162,8 +163,8 @@ class GamesController < ApplicationController
     
   end
   def coup
-    @game.current_player.money -= 7
-    @game.current_player.save
+    take_money(-7, @game.current_player)
+
     @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
     @game.log +=  "#{@game.current_player.nickname} couped #{@opponent.nickname}."
     @game.active_player_id = @opponent.id
@@ -175,17 +176,9 @@ class GamesController < ApplicationController
     redirect_to(game_url(@game))
     #render :show
   end
-  def react_to_coup
-    @card_to_remove = current_user.cards.select{|x| x.card_type == params['card']}[0]
-    current_user.cards -= [@card_to_remove]
-    @card_to_remove.is_dead =  true
-    @card_to_remove.save  
-    current_user.save
-    redirect_to(end_turn_url)
-  end
+
   def assassin
-    @game.current_player.money -= 3
-    @game.current_player.save
+    take_money(-3, @game.current_player)
     @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
     @game.log +=  "#{@game.current_player.nickname} assassinated #{@opponent.nickname}."
     @game.active_player_id = @opponent.id
@@ -195,7 +188,7 @@ class GamesController < ApplicationController
     })
     redirect_to(game_url(@game))
   end
-  def react_to_assassin
+  def kill
     @card_to_remove = current_user.cards.select{|x| x.card_type == params['card']}[0]
     @card_to_remove.is_dead =  true
     @card_to_remove.save
@@ -216,6 +209,37 @@ class GamesController < ApplicationController
 
     @game.save
     redirect_to(end_turn_url)
+  end
+  def challenge
+
+    @game = Game.find(params[:id])
+    @player = current_user
+    @card = params[:card]
+    @game.log +=  "#{@player.nickname} challenges."
+   
+    if @game.current_player.cards.map{|x| x.card_type}.include?(@card)
+      @game.log +=  "challenge fails."
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: {action: "challenge", player: "#{@player.nickname}", result: "fail"}.to_json
+      })
+      puts params
+      if params[:game_action] == 'theft'
+        take_money(-2, current_user)
+        take_money(2, @game.current_player)
+      end
+      @game.save
+      
+      render :show
+      
+    else
+      @game.log +=  "challenge succeeds."
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: {action: "challenge", player: "#{@game.current_player.nickname}", result: "succeede"}.to_json
+      })
+
+      @game.save
+      redirect_to(end_turn_url)
+    end
   end
 
 end
