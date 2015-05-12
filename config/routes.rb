@@ -2,37 +2,34 @@ Rails.application.routes.draw do
   
   root to: 'static_pages#root'
   resources :users, defaults: {format: :json}
+
   post 'games/propose', :to => 'games#propose'
   get 'games/accept' => 'games#accept', :as => 'accept'
   get 'games/reject' => 'games#reject', :as => 'reject'
+  
   resources :games, :except => :show, defaults: {format: :json}
   resources :games, :only => :show
-  get 'games/end_turn/:id' => 'games#end_turn', :as => 'end_turn'
-  get 'games/take_income/:id' => 'games#take_income', :as => 'take_income'
-  get 'games/take_foreign_aid/:id' => 'games#take_foreign_aid', :as => 'take_foreign_aid'
-  get 'games/tax/:id' => 'games#tax', :as => 'tax'
-  post 'games/steal/:id' => 'games#steal', :as => 'steal'
+
   get 'cards/build_deck/:id' => 'cards#build_deck', :as => 'build_deck' 
+
+  get 'turn_logics/end_turn/:id' => 'turn_logics#end_turn', :as => 'end_turn'
+  get 'turn_logics/take_income/:id' => 'turn_logics#take_income', :as => 'take_income'
+  get 'turn_logics/take_foreign_aid/:id' => 'turn_logics#take_foreign_aid', :as => 'take_foreign_aid'
+  get 'turn_logics/tax/:id' => 'turn_logics#tax', :as => 'tax'
+  post 'turn_logics/steal/:id' => 'turn_logics#steal', :as => 'steal'
+  
   #even though this adds data to data base it's a get, not a post                               
   #because there is no data that we have to send - as it always adds
   #the same stuff to the database each time its called
-  get 'games/deal_cards/:id' => 'games#deal_cards', :as => 'deal_cards'
- 
-  post 'games/coup/:id' => 'games#coup', :as => 'coup'
- 
-  post 'games/assassin/:id' => 'games#assassin', :as => 'assassin'
-  #get 'games/claim_contessa/:id' => 'games#claim_contessa', :as => 'claim_contessa'
-  post 'games/block_action/:id' => 'games#block', :as => 'block'
-  get 'games/resolve_theft/:id' => 'games#resolve_theft', :as => 'resolve_theft'
-  get 'games/resolve_foreign_aid/:id' => 'games#resolve_foreign_aid', :as => 'resolve_foreign_aid'
-  # get 'users/make_into_block/:id' => 'users#make_into_block', :as => 'make_into_block'
-  # get 'games/resolution/:id' => 'games#resolution', :as => 'resolution'
-  post 'games/challenge/:id' =>'games#challenge', :as => 'challenge'
+  get 'turn_logics/deal_cards/:id' => 'turn_logics#deal_cards', :as => 'deal_cards'
+  post 'turn_logics/coup/:id' => 'turn_logics#coup', :as => 'coup'
+  post 'turn_logics/assassin/:id' => 'turn_logics#assassin', :as => 'assassin'
+  post 'turn_logics/block_action/:id' => 'turn_logics#block', :as => 'block'
+  get 'turn_logics/resolve_theft/:id' => 'turn_logics#resolve_theft', :as => 'resolve_theft'
+  get 'turn_logics/resolve_foreign_aid/:id' => 'turn_logics#resolve_foreign_aid', :as => 'resolve_foreign_aid'
+  post 'turn_logics/challenge/:id' =>'turn_logics#challenge', :as => 'challenge' 
+  post 'turn_logics/kill/:id' => 'turn_logics#kill', :as => 'kill'
 
-   
-   #post 'games/react_to_coup/:id' => 'games#react_to_coup', :as => 'react_to_coup'
-   #post 'games/react_to_assassin/:id' => 'games#react_to_assassin', :as => 'react_to_assassin'
 
-   post 'games/kill/:id' => 'games#kill', :as => 'kill'
 
 end

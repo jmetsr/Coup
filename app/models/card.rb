@@ -11,4 +11,15 @@ class Card < ActiveRecord::Base
       	primary_key: :id,
       	foreign_key: :user_id
 	)
+
+	def deal(user)
+		self.is_in_deck = false
+        self.user_id = user.id
+        self.save
+	end
+
+	def remove
+		self.is_dead = true
+		self.save
+	end
 end

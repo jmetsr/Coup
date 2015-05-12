@@ -22,20 +22,21 @@ Revealed Cards:<br>
 
 <div class="input">
 	<% if @game.current_player == current_user && @game.active_player == current_user %>
-		<%= render(:partial => "your_turn") %>
+		<%= render(:partial => "games/your_turn") %> 
+		<!-- contains logic for moves you can make on your turn -->
 	<% end %>
 	<div class="hidden" id="reactToCoup">
-		<%= render(:partial => "react_to_coup") %>
+		<%= render(:partial => "games/react_to_coup") %>
 	</div>
 	<div class="hidden" id="reactToAssassin">
-		<%= render(:partial => "react_to_assassin") %>
+		<%= render(:partial => "games/react_to_assassin") %>
 	</div><br>
 
 	<div class="hidden" id="reactToFailedChallenge">
-		<%= render(:partial => "react_to_failed_challenge") %>
+		<%= render(:partial => "games/react_to_failed_challenge") %>
 	</div><br>
 	<div class="hidden" id="bluffCalled">
-		<%= render(:partial => "bluff_called") %>
+		<%= render(:partial => "games/bluff_called") %>
 	</div>
 
 	<div class="hidden" id="claimContessa">
@@ -46,10 +47,10 @@ Revealed Cards:<br>
 		</form>
 	</div>
 	<div class="hidden" id="reactToTheft">
-		<%= render(:partial => "react_to_theft") %>
+		<%= render(:partial => "games/react_to_theft") %>
 	</div>
 	<div class="hidden" id="reactToForeignAid">
-		<%= render(:partial => "react_to_foreign_aid") %>
+		<%= render(:partial => "games/react_to_foreign_aid") %>
 	</div>
 </div>
 

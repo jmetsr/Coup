@@ -23,5 +23,10 @@ class Game < ActiveRecord::Base
  		primary_key: :id,
  		foreign_key: :active_player_id
  	)
+
+ 	def record(string)
+ 		self.log += string
+ 		self.save
+ 	end
  	
 end

@@ -25,5 +25,14 @@ class ApplicationController < ActionController::Base
     player.save
   end
 
+  def preform_action(cost, type, action_type)
+      take_money(-cost, @game.current_player)
+      @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
+      @game.active_player_id = @opponent.id
+      @game.record("#{@game.current_player.nickname} #{type} #{@opponent.nickname}.")
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: {action: action_type, opponent: "#{@opponent.nickname}"}.to_json})
+      redirect_to(game_url(@game))
+  end
 
 end

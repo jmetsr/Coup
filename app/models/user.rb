@@ -19,7 +19,6 @@ class User < ActiveRecord::Base
     primary_key: :id,
     foreign_key: :proposed_id
   )
-
   has_many(
     :people_proposed_to,   
     :through => :proposed_games, 
@@ -42,13 +41,11 @@ class User < ActiveRecord::Base
   has_many(
     :cards,
     foreign_key: :user_id
-
   )
   def potential_opponents
     return (self.people_proposed_to + self.proposers + self.co_proposeds + [self]).uniq
   end
           
-
   def set_session_token
     self.session_token ||= generate_session_token
   end
@@ -75,13 +72,11 @@ class User < ActiveRecord::Base
     self.accepted = false
     self.save
   end
-
   def reset
     self.rejected = false
     self.accepted = false
     self.save
   end
-
   def set_time_out_time
     sign_out_time = Time.now.to_i + 900
     self.time_out_time ||=  sign_out_time
@@ -95,13 +90,13 @@ class User < ActiveRecord::Base
       })
     end
   end
-
   def self.time_out_users
     User.all.each do |user|
       user.check_time_out
     end
   end
-
+  def allow
+    self.is_allowing = true
+    self.save
+  end
 end
-
-
