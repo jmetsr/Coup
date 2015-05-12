@@ -66,65 +66,43 @@ Your Cards: <br>
 <% end %>
 </div>
 
-
 <script>
-	window["channel: " + <%= @game.id %>] = pusher.subscribe("game_channel_number_" + <%= @game.id %>);
+window["channel: " + <%= @game.id %>] = pusher.subscribe("game_channel_number_" + <%= @game.id %>);
 
-	
-	window["channel: " + <%= @game.id %>].bind('game_data_for_' + <%= @game.id %>, function(data) {
-		if (data.message[0] == "t"){    //a turn ended
-			console.log("meassage of turn ending received")
-			location.reload();
-		}
-		if (data.message[0] == "c"){    //cards finished dealing
-			location.reload();
-			console.log("meassage of cards dealing received")
-			
-		}
+window["channel: " + <%= @game.id %>].bind('game_data_for_' + <%= @game.id %>, function(data) {
+	if (data.message[0] == "t"){    //a turn ended
+		location.reload();
+	}
+	if (data.message[0] == "c"){    //cards finished dealing
+		location.reload();	
+	}
 
-		if (((JSON.parse(data.message)).action === "coup") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
-		 	document.getElementById('reactToCoup').className = ""
-		}
-		if (((JSON.parse(data.message)).action === "assassin") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
-		 	document.getElementById('reactToAssassin').className = ""
-		 	document.getElementById('claimContessa').className = ""
-		}
-		if (((JSON.parse(data.message)).action === "theft") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
-		 	document.getElementById('reactToTheft').className = ""
-		}
-		if (((JSON.parse(data.message)).action === "foreign aid") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>')){
-		 	document.getElementById('reactToForeignAid').className = ""
-		}
-		if (((JSON.parse(data.message)).result === "fail") && ((JSON.parse(data.message)).player === "<%= current_user.nickname %>")){
-			document.getElementById('reactToFailedChallenge').className = "";
-		}
-		console.log(data.message)
-		
-	})
-  	function DisableButton(b)
-   	{
-   	  var ids = ['inc', 'frg', 'tax', 'stl', 'coup', 'asn'];
-      b.disabled = true;
-      b.value = 'Submitting';
-      b.form.submit();
-      for (id in ids){
-      	if (document.getElementById(ids[id]) != b){
-      		document.getElementById(ids[id]).disabled=true;
-      	}
-      }
-
-   	}
-   	function challenge(card, action){
-   		$.ajax({
-        	type: "POST",
-        	url: "<%= challenge_url %>",
-       		data: {
-         		card: card,
-         		game_action: action
-        	}
-     	 })
-   	}
-
+	if (((JSON.parse(data.message)).action === "coup") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
+		 document.getElementById('reactToCoup').className = ""
+	}
+	if (((JSON.parse(data.message)).action === "assassin") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
+		 document.getElementById('reactToAssassin').className = ""
+		 document.getElementById('claimContessa').className = ""
+	}
+	if (((JSON.parse(data.message)).action === "theft") && ((JSON.parse(data.message)).opponent == '<%= current_user.nickname %>')){
+		document.getElementById('reactToTheft').className = ""
+	}
+	if (((JSON.parse(data.message)).action === "foreign aid") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>')){
+		 document.getElementById('reactToForeignAid').className = ""
+	}
+	if (((JSON.parse(data.message)).result === "fail") && ((JSON.parse(data.message)).player === "<%= current_user.nickname %>")){
+		document.getElementById('reactToFailedChallenge').className = "";
+	}
+})
+function challenge(card, action){
+   	$.ajax({
+        type: "POST",
+        url: "<%= challenge_url %>",
+       	data: {
+         	card: card,
+         	game_action: action
+        }
+    })
+}
 </script>
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-route.min.js"></script>
 

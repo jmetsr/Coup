@@ -41,7 +41,17 @@ function proposeGame(proposingInfo, controllerScope) {
     controllerScope.$broadcast('gameProposed');
 };
 
-
+function DisableButton(b){
+    var ids = ['inc', 'frg', 'tax', 'stl', 'coup', 'asn'];
+    b.disabled = true;
+    b.value = 'Submitting';
+    b.form.submit();
+    for (id in ids){
+        if (document.getElementById(ids[id]) != b){
+            document.getElementById(ids[id]).disabled=true;
+        }
+    }
+}
 
 
 
