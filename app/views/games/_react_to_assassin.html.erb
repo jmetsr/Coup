@@ -1,0 +1,8 @@
+Which card would you like to have assassinated?
+<form action="<%= kill_url %>" method="post">
+	<% current_user.cards.each do |card| %>
+		<input type="radio" name="card" value="<%= card.card_type %>"> 
+		<%= card.card_type %>
+	<% end %><br>
+	<input type="submit" value="SEND">
+</form>

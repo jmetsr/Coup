@@ -1,9 +1,3 @@
-<!-- <div ng-app="game">
-<div ng-controller="GameController"> -->
-
-<!-- <h1>Welcome to the game show page</h1> -->
-<!-- <%= @game.id %> -->
-
 <h2 class="game-title"> Game  </h2>
 
 <div class="game-data">
@@ -27,95 +21,21 @@ Revealed Cards:<br>
 <br>
 
 <div class="input">
-<% if @game.current_player == current_user && @game.active_player == current_user%>
-	<form action="<%= take_income_url %>" method="get" class="form">
-	<input type="submit" value="Take Income" id="inc" 
-	onclick="DisableButton(this);">
-	</form>
-	<form action="<%= take_foreign_aid_url %>" method="get" class="form">
-	<input type="submit" value="Take Foreign Aid" id="frg" onclick="DisableButton(this);" >
-	</form>
-	<form action="<%= tax_url %>" method="get" class="form">
-	<input type="submit" value="Take Tax" id="tax" onclick="DisableButton(this);">
-	</form>
-
-	<% if current_user.money >=  7 %>
-	<form action="<%= coup_url %>" method="post">
-		<select name="opponent">
-			<% (@game.users - [current_user]).each do |user| %>	
-  			Coup: <option><%= user.nickname %></option>	
-			<% end %>
-		</select>
-
-		<input type="submit" value="Coup" id="coup" onclick="DisableButton(this);">
-	</form>
+	<% if @game.current_player == current_user && @game.active_player == current_user %>
+		<%= render(:partial => "your_turn") %>
 	<% end %>
-	<% if current_user.money >=  3 %>
-		<form action="<%= assassin_url %>" method="post">
-		<select name="opponent">
-			<% (@game.users - [current_user]).each do |user| %>	
-  			Assassinate: <option><%= user.nickname %></option>	
-			<% end %>
-		</select>
-
-		<input type="submit" value="Assassinate" id="asn" onclick="DisableButton(this);">
-	</form>
-	<% end %>
-	<form action="<%= steal_url %>" method="post">
-		<select name="opponent">
-			<% (@game.users - [current_user]).each do |user| %>	
-  			Steal From: <option><%= user.nickname %></option>	
-			<% end %>
-		</select>
-		<input type="submit" value="Steal" id="stl" onclick="DisableButton(this);">
-	</form>
-<% end %>
 	<div class="hidden" id="reactToCoup">
-	Which card would you like to have couped?
-		<form action="<%= kill_url %>" method="post">
-			<% current_user.cards.each do |card| %>
-				<input type="radio" name="card" value="<%= card.card_type %>"> 
-				<%= card.card_type %>
-			<% end %><br>
-			<input type="submit" value="SEND">
-		</form>
+		<%= render(:partial => "react_to_coup") %>
 	</div>
 	<div class="hidden" id="reactToAssassin">
-	Which card would you like to have assassinated?
-		<form action="<%= kill_url %>" method="post">
-			<% current_user.cards.each do |card| %>
-				<input type="radio" name="card" value="<%= card.card_type %>"> 
-				<%= card.card_type %>
-			<% end %><br>
-			<input type="submit" value="SEND">
-
-		</form>
+		<%= render(:partial => "react_to_assassin") %>
 	</div><br>
 
 	<div class="hidden" id="reactToFailedChallenge">
-	Your Challnenge Failed!! :( <br>
-	Which card would you like to give up?
-		<form action="<%= kill_url %>" method="post">
-			<% current_user.cards.each do |card| %>
-				<input type="hidden" name="url" id="failedChallengeUrl">
-				<input type="radio" name="card" value="<%= card.card_type %>"> 
-				<%= card.card_type %>
-			<% end %><br>
-			<input type="submit" value="SEND">
-
-		</form>
+		<%= render(:partial => "react_to_failed_challenge") %>
 	</div><br>
 	<div class="hidden" id="bluffCalled">
-		Your Bluff has been called!! :( <br>
-	Which card would you like to give up?
-		<form action="<%= kill_url %>" method="post">
-			<% current_user.cards.each do |card| %>
-				<input type="radio" name="card" value="<%= card.card_type %>"> 
-				<%= card.card_type %>
-			<% end %><br>
-			<input type="submit" value="SEND">
-
-		</form>
+		<%= render(:partial => "bluff_called") %>
 	</div>
 
 	<div class="hidden" id="claimContessa">
@@ -126,44 +46,11 @@ Revealed Cards:<br>
 		</form>
 	</div>
 	<div class="hidden" id="reactToTheft">
-		<form action="<%= block_url %>" method="post">
-			<input type="hidden" value="Captin" name="card">
-			<input type="Submit" value="Block with Captin?">		
-		</form>
-		Or
-		<form action="<%= block_url %>" method="post">
-			<input type="hidden" value="Ambassador" name="card">
-			<input type="Submit" value="Block with Ambassador?">		
-		</form>
-		Or 
-<!-- 		<form action="<%= challenge_url %>" method="post">
-			<input type="hidden" value="Captin" name="card">
-		
-			<input type="Submit" value="Challenge">
-		</form> -->
-		<button id="challenge" onclick="challenge('Captin', 'theft')">Challenge</button>
-		Or
-		<form action="<%= resolve_theft_url %>" method="get">
-			<input type="Submit" value="Give up the money">		
-		</form>
-
+		<%= render(:partial => "react_to_theft") %>
 	</div>
 	<div class="hidden" id="reactToForeignAid">
-		<form action="<%= block_url %>" method="post"><br>
-		<input type="hidden" value="Duke" name="card">
-		<input type="hidden" value="<%= current_user.nickname %>" name="player">
-		Would you like to block with duke?<br>
-		<input type="Submit" value="Block"><br>
-		</form>
-		<form action="<%= resolve_foreign_aid_url %>" method="get">
-		Or Just let them take their aid?<br>
-		<input type="Submit" value="Let em have it">	
-		</form>
-		
+		<%= render(:partial => "react_to_foreign_aid") %>
 	</div>
-
-
-
 </div>
 
 <div class="your-cards">
@@ -179,9 +66,6 @@ Your Cards: <br>
 <% end %>
 </div>
 
-
-
-	
 
 <script>
 	window["channel: " + <%= @game.id %>] = pusher.subscribe("game_channel_number_" + <%= @game.id %>);
@@ -240,9 +124,6 @@ Your Cards: <br>
         	}
      	 })
    	}
-
-
-
 
 </script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular-route.min.js"></script>

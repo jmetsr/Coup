@@ -1,0 +1,15 @@
+<form action="<%= block_url %>" method="post">
+	<input type="hidden" value="Captin" name="card">
+	<input type="Submit" value="Block with Captin?">		
+</form>
+	Or
+<form action="<%= block_url %>" method="post">
+	<input type="hidden" value="Ambassador" name="card">
+	<input type="Submit" value="Block with Ambassador?">		
+</form>
+Or 
+<button id="challenge" onclick="challenge('Captin', 'theft')">Challenge</button>
+Or
+<form action="<%= resolve_theft_url %>" method="get">
+	<input type="Submit" value="Give up the money">		
+</form>

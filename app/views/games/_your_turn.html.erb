@@ -1,0 +1,18 @@
+<form action="<%= take_income_url %>" method="get" class="form">
+	<input type="submit" value="Take Income" id="inc" onclick="DisableButton(this);">
+</form>
+<form action="<%= take_foreign_aid_url %>" method="get" class="form">
+	<input type="submit" value="Take Foreign Aid" id="frg" onclick="DisableButton(this);" >
+</form>
+<form action="<%= tax_url %>" method="get" class="form">
+	<input type="submit" value="Take Tax" id="tax" onclick="DisableButton(this);">
+</form>
+
+<% if current_user.money >=  7 %>
+	<%= render(:partial => "coup") %>
+<% end %>
+<% if current_user.money >=  3 %>
+	<%= render(:partial => "assassin") %>
+<% end %>
+	
+<%= render(:partial => "steal") %>

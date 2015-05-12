@@ -1,0 +1,9 @@
+<form action="<%= coup_url %>" method="post">
+	<select name="opponent">
+		<% (@game.users - [current_user]).each do |user| %>	
+  			Coup: <option><%= user.nickname %></option>	
+		<% end %>
+	</select>
+
+	<input type="submit" value="Coup" id="coup" onclick="DisableButton(this);">
+</form>

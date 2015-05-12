@@ -1,0 +1,8 @@
+<form action="<%= assassin_url %>" method="post">
+	<select name="opponent">
+		<% (@game.users - [current_user]).each do |user| %>	
+  			Assassinate: <option><%= user.nickname %></option>	
+		<% end %>
+	</select>
+<input type="submit" value="Assassinate" id="asn" onclick="DisableButton(this);">
+</form>

@@ -1,0 +1,10 @@
+<form action="<%= block_url %>" method="post"><br>
+	<input type="hidden" value="Duke" name="card">
+	<input type="hidden" value="<%= current_user.nickname %>" name="player">
+	Would you like to block with duke?<br>
+	<input type="Submit" value="Block"><br>
+</form>
+<form action="<%= resolve_foreign_aid_url %>" method="get">
+	Or Just let them take their aid?<br>
+	<input type="Submit" value="Let em have it">	
+</form>

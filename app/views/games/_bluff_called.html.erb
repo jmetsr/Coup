@@ -1,0 +1,9 @@
+Your Bluff has been called!! :( <br>
+Which card would you like to give up?
+<form action="<%= kill_url %>" method="post">
+	<% current_user.cards.each do |card| %>
+		<input type="radio" name="card" value="<%= card.card_type %>"> 
+		<%= card.card_type %>
+	<% end %><br>
+	<input type="submit" value="SEND">
+</form>

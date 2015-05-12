@@ -1,0 +1,8 @@
+<form action="<%= steal_url %>" method="post">
+	<select name="opponent">
+		<% (@game.users - [current_user]).each do |user| %>	
+  			Steal From: <option><%= user.nickname %></option>	
+		<% end %>
+	</select>
+	<input type="submit" value="Steal" id="stl" onclick="DisableButton(this);">
+</form>
