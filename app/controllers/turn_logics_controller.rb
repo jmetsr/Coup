@@ -1,5 +1,5 @@
 class TurnLogicsController < ApplicationController
-	before_filter :require_your_turn, only: [:take_income, :take_foreign_aid, :tax, :steal, :coup, :assassin]
+	before_filter :require_your_turn, only: [:take_income, :take_foreign_aid, :tax, :steal, :coup, :assassin, :exchange]
 	def end_turn
     	@game = Game.find(params[:id])
       @game.users.each{|player| player.reset_allow}
@@ -50,9 +50,6 @@ class TurnLogicsController < ApplicationController
     end
 
   	def tax
-     	#take_money(3, @game.current_player)
-      #@game.record("#{@game.current_player.nickname} took tax.")
-      #redirect_to(end_turn_url)
       @game.record("#{@game.current_player.nickname} took tax.")
       Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
           message: {action: "tax", opponent: "#{current_user.nickname}"}.to_json})
@@ -117,7 +114,6 @@ class TurnLogicsController < ApplicationController
         redirect_to(end_turn_url)
       else
         redirect_to(game_url(@game))
-        # for some reason we are ending up here instead of the if block
       end
     end
   	def challenge
@@ -143,6 +139,13 @@ class TurnLogicsController < ApplicationController
             take_money(2, challenged)
           end
       		@game.record("challenge fails.")
+          card_to_reshuffel = challenged.cards.select{|x| x.card_type == @card}[0]
+          card_to_reshuffel.is_in_deck = true
+          card_to_reshuffel.user_id = nil
+          card_to_reshuffel.save
+          @card = @game.cards.select{|x| x.is_in_deck}.sample
+          @card.deal(challenged)
+
       		render :template => "games/show"
    		 else
       		Pusher["game_channel_number_" + @game.id.to_s].trigger('game_data_for_' + @game.id.to_s, {
@@ -153,4 +156,30 @@ class TurnLogicsController < ApplicationController
           render :template => "games/show"
     	end
  	end
+  def exchange
+      @game.record("#{@game.current_player.nickname} exchanges.")
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: {action: "exchange", opponent: "#{current_user.nickname}"}.to_json})
+        redirect_to(game_url(@game))
+  end
+  def resolve_exchange
+      @game = Game.find(params[:id])
+      current_user.allow
+      @opponents = @game.users.select{|player| player != @game.current_player}
+      if @opponents.all?{|player| player.is_allowing }
+        number_of_cards = @game.current_player.cards.length
+        @game.current_player.cards.each do |card|
+          card.is_in_deck = true
+          card.user_id = nil
+          card.save
+        end
+        number_of_cards.times do
+          @card = @game.cards.select{|x| x.is_in_deck}.sample
+          @card.deal(@game.current_player)
+        end
+        redirect_to(end_turn_url)
+      else
+          render :template => "games/show"
+      end
+  end
 end

@@ -30,6 +30,9 @@ Rails.application.routes.draw do
   post 'turn_logics/challenge/:id' =>'turn_logics#challenge', :as => 'challenge' 
   post 'turn_logics/kill/:id' => 'turn_logics#kill', :as => 'kill'
 
+  get 'turn_logics/exchange/:id' => 'turn_logics#exchange', :as => 'exchange'
+  get 'turn_logics/resolve_exchange/:id' => 'turn_logics#resolve_exchange', :as => 'resolve_exchange'
+
   get 'turn_logics/resolve_block/:id' => 'turn_logics#resolve_block', :as => 'resolve_block'
 
   get 'turn_logics/resolve_tax/:id' => 'turn_logics#resolve_tax', :as => 'resolve_tax'

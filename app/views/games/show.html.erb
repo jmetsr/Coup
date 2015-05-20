@@ -62,11 +62,25 @@ Revealed Cards:<br>
 	<div class="hidden" id="reactToSuccessfulChallenge">
 		<%= render(:partial => "games/react_to_successfull_challenge") %>
 	</div>
+
+	<div id="displayBlockInfo">
+
+	</div>
+
 	<div class="hidden" id="reactToBlockContessa">
 		<%= render(:partial => "games/react_to_block", locals: {card: "Contessa"}) %>
 	</div>
 	<div class="hidden" id="reactToBlockForeignAid">
 		<%= render(:partial => "games/react_to_block", locals: {card: "Duke"}) %>
+	</div>
+	<div class="hidden" id="reactToBlockTheftCaptin">
+		<%= render(:partial => "games/react_to_block", locals: {card: "Captin"}) %>
+	</div>
+	<div class="hidden" id="reactToBlockTheftAmbassador">
+		<%= render(:partial => "games/react_to_block", locals: {card: "Ambassador"}) %>
+	</div>
+	<div class="hidden" id="reactToExchange">
+		<%= render(:partial => "games/react_to_exchange") %>
 	</div>
 </div>
 
@@ -116,13 +130,26 @@ window["channel: " + <%= @game.id %>].bind('game_data_for_' + <%= @game.id %>, f
 	if (((JSON.parse(data.message)).action === "tax") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>')){
 		 document.getElementById('reactToTax').className = ""
 	}
+	if ((JSON.parse(data.message)).action === "block"){
+		var infoString = (JSON.parse(data.message)).opponent + " blocks with " + (JSON.parse(data.message)).card
+		document.getElementById('displayBlockInfo').innerHTML = infoString
+
+	}
 	if (((JSON.parse(data.message)).action === "block") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>') &&  (JSON.parse(data.message)).card == 'Contessa'){
-		 document.getElementById('reactBlockContessa').className = ""
+		 document.getElementById('reactToBlockContessa').className = ""
 	}
 	if (((JSON.parse(data.message)).action === "block") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>') &&  (JSON.parse(data.message)).card == 'Duke'){
 		 document.getElementById('reactToBlockForeignAid').className = ""
 	}
-
+	if (((JSON.parse(data.message)).action === "block") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>') &&  (JSON.parse(data.message)).card == 'Captin'){
+		 document.getElementById('reactToBlockTheftCaptin').className = ""
+	}
+	if (((JSON.parse(data.message)).action === "block") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>') &&  (JSON.parse(data.message)).card == 'Ambassador'){
+		 document.getElementById('reactToBlockTheftAmbassador').className = ""
+	}
+	if (((JSON.parse(data.message)).action === "exchange") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>')){
+		 document.getElementById('reactToExchange').className = ""
+	}
 
 	console.log(data.message)
 })
