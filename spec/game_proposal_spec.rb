@@ -72,10 +72,12 @@ feature "accepting and rejecting", :js => true do
   		in_browser(:one) do
   			click_button('no')
   			page.should have_content 'jack rejects'
+        click_button('LOGOUT')
   		end
 
   		in_browser(:two) do
   			page.should have_content 'jack rejects'
+        click_button('LOGOUT')
   		end
   	end
   

@@ -39,18 +39,34 @@ Revealed Cards:<br>
 		<%= render(:partial => "games/bluff_called") %>
 	</div>
 
+
 	<div class="hidden" id="claimContessa">
 		Or 
 		<form action="<%= block_url %>" method="post">
 			<input type="hidden" value="Contessa" name="card">
 			<input type="submit" value="claim contessa">			
 		</form>
+		Or 
+		<button id="challenge" onclick="challenge('Assassin', 'Assassination'); DisableButton(this);">Challenge</button>
+		Or
 	</div>
 	<div class="hidden" id="reactToTheft">
 		<%= render(:partial => "games/react_to_theft") %>
 	</div>
 	<div class="hidden" id="reactToForeignAid">
 		<%= render(:partial => "games/react_to_foreign_aid") %>
+	</div>
+	<div class="hidden" id="reactToTax">
+		<%= render(:partial => "games/react_to_tax") %>
+	</div>
+	<div class="hidden" id="reactToSuccessfulChallenge">
+		<%= render(:partial => "games/react_to_successfull_challenge") %>
+	</div>
+	<div class="hidden" id="reactToBlockContessa">
+		<%= render(:partial => "games/react_to_block", locals: {card: "Contessa"}) %>
+	</div>
+	<div class="hidden" id="reactToBlockForeignAid">
+		<%= render(:partial => "games/react_to_block", locals: {card: "Duke"}) %>
 	</div>
 </div>
 
@@ -94,6 +110,21 @@ window["channel: " + <%= @game.id %>].bind('game_data_for_' + <%= @game.id %>, f
 	if (((JSON.parse(data.message)).result === "fail") && ((JSON.parse(data.message)).player === "<%= current_user.nickname %>")){
 		document.getElementById('reactToFailedChallenge').className = "";
 	}
+	if (((JSON.parse(data.message)).result === "succeede") && ((JSON.parse(data.message)).player === "<%= current_user.nickname %>")){
+		document.getElementById('reactToSuccessfulChallenge').className = "";
+	}
+	if (((JSON.parse(data.message)).action === "tax") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>')){
+		 document.getElementById('reactToTax').className = ""
+	}
+	if (((JSON.parse(data.message)).action === "block") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>') &&  (JSON.parse(data.message)).card == 'Contessa'){
+		 document.getElementById('reactBlockContessa').className = ""
+	}
+	if (((JSON.parse(data.message)).action === "block") && ((JSON.parse(data.message)).opponent != '<%= current_user.nickname %>') &&  (JSON.parse(data.message)).card == 'Duke'){
+		 document.getElementById('reactToBlockForeignAid').className = ""
+	}
+
+
+	console.log(data.message)
 })
 function challenge(card, action){
    	$.ajax({

@@ -99,4 +99,8 @@ class User < ActiveRecord::Base
     self.is_allowing = true
     self.save
   end
+  def reset_allow
+    self.is_allowing = false
+    self.save
+  end
 end

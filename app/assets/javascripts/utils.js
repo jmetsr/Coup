@@ -42,13 +42,16 @@ function proposeGame(proposingInfo, controllerScope) {
 };
 
 function DisableButton(b){
-    var ids = ['inc', 'frg', 'tax', 'stl', 'coup', 'asn'];
-    b.disabled = true;
-    b.value = 'Submitting';
-    b.form.submit();
+    var ids = ['inc', 'frg', 'tax', 'stl', 'coup', 'asn', 'challenge', 'rsvtheft', 'blocka', 'blockc'];
+    if (b != null && b.form != null){
+        b.disabled = true;
+        b.value = 'Submitting';
+        b.form.submit();
+    }
     for (id in ids){
-        if (document.getElementById(ids[id]) != b){
+        if (document.getElementById(ids[id]) != b && document.getElementById(ids[id]) != null){
             document.getElementById(ids[id]).disabled=true;
+            console.log(ids[id])
         }
     }
 }
