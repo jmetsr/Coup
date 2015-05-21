@@ -4,10 +4,10 @@ class TurnLogicsController < ApplicationController
     	@game = Game.find(params[:id])
       @game.users.each{|player| player.reset_allow}
     	if @game.current_player == @game.users.order("created_at").last
-      		@game.current_player_id = @game.users.order("created_at").first.id
+      	@game.current_player_id = @game.users.order("created_at").first.id
     	else
-     		current_player_number = @game.users.order("created_at").index(@game.current_player)
-      		@game.current_player_id = @game.users.order("created_at")[current_player_number+1].id
+     	  current_player_number = @game.users.order("created_at").index(@game.current_player)
+      	@game.current_player_id = @game.users.order("created_at")[current_player_number+1].id
     	end
     	@game.active_player_id = @game.current_player_id
     	@game.record("---#{@game.current_player.nickname}'s turn---.")
@@ -43,7 +43,7 @@ class TurnLogicsController < ApplicationController
       current_user.allow
       @opponents = @game.users.select{|player| player != @game.current_player}
       if @opponents.all?{|player| player.is_allowing }
-          take_money(3, @game.current_player)
+        take_money(3, @game.current_player)
         redirect_to(end_turn_url)
       else
           render :template => "games/show"
@@ -90,7 +90,31 @@ class TurnLogicsController < ApplicationController
     	@card_to_remove.remove
     	current_user.cards -= [@card_to_remove]  
     	current_user.save
-    	redirect_to(end_turn_url)
+      if current_user.cards.length == 0
+
+        current_user.game_id = nil
+        current_user.save
+        render :template => "static_pages/you_lose"
+
+        @game = Game.find(params[:id])
+        @game.users.each{|player| player.reset_allow}
+        if @game.current_player == @game.users.order("created_at").last
+          @game.current_player_id = @game.users.order("created_at").first.id
+        else
+          current_player_number = @game.users.order("created_at").index(@game.current_player)
+          @game.current_player_id = @game.users.order("created_at")[current_player_number+1].id
+        end
+        @game.active_player_id = @game.current_player_id
+        @game.record("---#{@game.current_player.nickname}'s turn---.")
+        Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: "turn over"})
+
+
+
+
+      else
+    	  redirect_to(end_turn_url)
+      end
   	end
   	def block
 		  @game = Game.find(params[:id])
