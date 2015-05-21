@@ -21,7 +21,7 @@ Revealed Cards:<br>
 <br>
 
 <div class="input">
-	<% if @game.current_player == current_user && @game.active_player == current_user %>
+	<% if @game.current_player == current_user && @game.active_player == current_user%>
 		<%= render(:partial => "games/your_turn") %> 
 		<!-- contains logic for moves you can make on your turn -->
 	<% end %>
@@ -123,6 +123,13 @@ window["channel: " + <%= @game.id %>].bind('game_data_for_' + <%= @game.id %>, f
 	}
 	if (((JSON.parse(data.message)).result === "fail") && ((JSON.parse(data.message)).player === "<%= current_user.nickname %>")){
 		document.getElementById('reactToFailedChallenge').className = "";
+		document.getElementById('reactToTax').className = "hidden";
+		document.getElementById('reactToTheft').className = "hidden";
+		document.getElementById('reactToExchange').className = "hidden";
+		document.getElementById('reactToBlockTheftCaptin').className = "hidden";
+		document.getElementById('reactToBlockTheftAmbassador').className = "hidden";
+		document.getElementById('reactToBlockContessa').className = "hidden";
+		document.getElementById('reactToForeignAid').className = "hidden";
 	}
 	if (((JSON.parse(data.message)).result === "succeede") && ((JSON.parse(data.message)).player === "<%= current_user.nickname %>")){
 		document.getElementById('reactToSuccessfulChallenge').className = "";

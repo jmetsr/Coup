@@ -17,10 +17,11 @@ class TurnLogicsController < ApplicationController
   	end
   	def take_income
      	take_money(1, @game.current_player)    
-      	@game.record("#{@game.current_player.nickname} took income.")
-      	redirect_to(end_turn_url)
+      @game.record("#{@game.current_player.nickname} took income.")
+      redirect_to(end_turn_url)
   	end
   	def take_foreign_aid
+      @game.active_player_id = nil
     	@game.record("#{@game.current_player.nickname} took foreign aid.")
      	Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
         	message: {action: "foreign aid", opponent: "#{current_user.nickname}"}.to_json})
@@ -50,6 +51,7 @@ class TurnLogicsController < ApplicationController
     end
 
   	def tax
+      @game.active_player_id = nil
       @game.record("#{@game.current_player.nickname} took tax.")
       Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
           message: {action: "tax", opponent: "#{current_user.nickname}"}.to_json})
@@ -157,10 +159,13 @@ class TurnLogicsController < ApplicationController
     	end
  	end
   def exchange
+      @game.active_player_id = nil
       @game.record("#{@game.current_player.nickname} exchanges.")
+
       Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
           message: {action: "exchange", opponent: "#{current_user.nickname}"}.to_json})
         redirect_to(game_url(@game))
+        #render :template => "games/show"
   end
   def resolve_exchange
       @game = Game.find(params[:id])

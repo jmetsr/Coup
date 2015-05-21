@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
 	def index
-    current_user && current_user.reject
     User.time_out_users
+    current_user && current_user.reject
     @users = User.all
 		render :index
 	end

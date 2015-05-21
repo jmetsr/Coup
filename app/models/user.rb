@@ -78,7 +78,7 @@ class User < ActiveRecord::Base
     self.save
   end
   def set_time_out_time
-    sign_out_time = Time.now.to_i + 900
+    sign_out_time = Time.now.to_i + 5000
     self.time_out_time ||=  sign_out_time
   end  
   def check_time_out

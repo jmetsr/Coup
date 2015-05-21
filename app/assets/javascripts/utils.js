@@ -35,6 +35,11 @@ function otherPlayers(playerList) {
         return (user.id != getMyId()) && (user != getMyStringId())
     })
 }
+function playersNotInAGame(playerList) {
+    return playerList.filter(function(user){
+        return (user.game_id == null)
+    })
+}
 
 function proposeGame(proposingInfo, controllerScope) {
     document.getElementById("text").innerHTML += proposingInfo; 
@@ -42,7 +47,7 @@ function proposeGame(proposingInfo, controllerScope) {
 };
 
 function DisableButton(b){
-    var ids = ['inc', 'frg', 'tax', 'stl', 'coup', 'asn', 'challenge', 'rsvtheft', 'blocka', 'blockc'];
+    var ids = ['inc', 'frg', 'tax', 'stl', 'coup', 'asn', 'challenge', 'rsvtheft', 'blocka', 'blockc', 'exch', 'letem'];
     if (b != null && b.form != null){
         b.disabled = true;
         b.value = 'Submitting';

@@ -1,1 +1,1 @@
-json.array! @users, :id, :nickname
+json.array! @users, :id, :nickname, :game_id

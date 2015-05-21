@@ -5,8 +5,9 @@ app.controller('MainController', function($scope, serverInteraction) {
 
 	$scope.getUsers = function() {
 		serverInteraction.makeRequestToGetUserData().success(function(data){
-			$scope.users = data
-			$scope.otherUsers = otherPlayers(data)
+			console.log(data)
+			$scope.users = playersNotInAGame(data)
+			$scope.otherUsers = otherPlayers(playersNotInAGame(data))
 		}) 
 	}
 	$scope.getUsers();
@@ -105,10 +106,8 @@ app.filter('oneForth', function() {
 	}
 })
 
-var delay = 900000;
-logout = setTimeout(function(){
-	alert("You have been logged out due to inactivity, please go back to http://localhost:3000/#/ and log in again")
-},delay); 
+
+
 
 app.directive('respondToGame', function() {
 	return {
