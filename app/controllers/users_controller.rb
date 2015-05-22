@@ -42,19 +42,10 @@ class UsersController < ApplicationController
     game.save
     render :json => @user
   end
-  # def make_into_block
-  #   @user = User.find(params[:id])
-  #   @user.is_blocking = true
-  #   @user.save
-  #   redirect_to(game_url(@user.game_id))
-  # end
+
   def show
     @user = User.find(params[:id])
     render :json => @user
   end
-
-
-
-
 
 end

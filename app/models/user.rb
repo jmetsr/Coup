@@ -58,6 +58,10 @@ class User < ActiveRecord::Base
     self.set_session_token
     self.save
   end
+  def put_back_card(card)
+    self.cards -= [card]  
+    self.save
+  end
 
   def reject
     self.proposed_games.each do |game|
@@ -101,6 +105,10 @@ class User < ActiveRecord::Base
   end
   def reset_allow
     self.is_allowing = false
+    self.save
+  end
+  def leave_the_game
+    self.game_id = nil
     self.save
   end
 end

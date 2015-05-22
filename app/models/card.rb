@@ -22,4 +22,12 @@ class Card < ActiveRecord::Base
 		self.is_dead = true
 		self.save
 	end
+
+	def reshuffle
+    	self.is_in_deck = true
+        self.user_id = nil
+        self.save
+	end
+
+	
 end
