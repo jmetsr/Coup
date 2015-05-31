@@ -41,6 +41,9 @@ class TurnLogicsController < ApplicationController
       render :template => "static_pages/you_lose"
       switch_turns
       switch_turns if @game.current_player == current_user
+      
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+        message: "turn over"})
     else
     	redirect_to(end_turn_url)
     end

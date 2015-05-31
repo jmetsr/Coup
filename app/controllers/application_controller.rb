@@ -42,14 +42,15 @@ class ApplicationController < ActionController::Base
   def switch_turns
     @game = Game.find(params[:id])
     @game.users.each{|player| player.reset_allow}
-    if @game.current_player == @game.users.order("created_at").last
-      @game.current_player_id = @game.users.order("created_at").first.id
+    if @game.current_player == @game.users.order("id").last
+      @game.current_player_id = @game.users.order("id").first.id
     else
-      current_player_number = @game.users.order("created_at").index(@game.current_player)
-      @game.current_player_id = @game.users.order("created_at")[current_player_number+1].id
+      current_player_number = indexx(@game.current_player.id,@game.users.order("id").map{|user| user.id})
+      @game.current_player_id = @game.users.order("id")[current_player_number].id
     end
     @game.active_player_id = @game.current_player_id
     @game.record("---#{@game.current_player.nickname}'s turn---.")
+
   end
 
   def resolve_money_take(money_amount)
@@ -76,5 +77,14 @@ class ApplicationController < ActionController::Base
     else
       redirect_to(game_url(@game))
     end
+  end
+  private
+  def indexx(param, array)
+    array.each_with_index do |el,index|
+      if param <= el
+        return index - 1 
+      end
+    end
+    return array.length - 1
   end
 end

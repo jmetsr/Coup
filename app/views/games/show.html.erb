@@ -1,5 +1,4 @@
 <h2 class="game-title"> Game  </h2>
-
 <div class="game-data">
 <% @game.users.each do |user| %>
 <%= user.nickname %> has <%= user.cards.length %> cards
@@ -16,10 +15,8 @@ Revealed Cards:<br>
 	<li><%= word %></li>
 <% end %>
 </ul>
-
 </div>
 <br>
-
 <div class="input">
 	<% if @game.current_player == current_user && @game.active_player == current_user%>
 		<%= render(:partial => "games/your_turn") %> 
@@ -31,24 +28,14 @@ Revealed Cards:<br>
 	<div class="hidden" id="reactToAssassin">
 		<%= render(:partial => "games/react_to_assassin") %>
 	</div><br>
-
 	<div class="hidden" id="reactToFailedChallenge">
 		<%= render(:partial => "games/react_to_failed_challenge") %>
 	</div><br>
 	<div class="hidden" id="bluffCalled">
 		<%= render(:partial => "games/bluff_called") %>
 	</div>
-
-
 	<div class="hidden" id="claimContessa">
-		Or 
-		<form action="<%= block_url %>" method="post">
-			<input type="hidden" value="Contessa" name="card">
-			<input type="submit" value="claim contessa">			
-		</form>
-		Or 
-		<button id="challenge" onclick="challengeAction('Assassin', 'Assassination'); DisableButton(this);">Challenge</button>
-		Or
+		<%= render(:partial => "games/claim_contessa") %>
 	</div>
 	<div class="hidden" id="reactToTheft">
 		<%= render(:partial => "games/react_to_theft") %>
@@ -62,11 +49,8 @@ Revealed Cards:<br>
 	<div class="hidden" id="reactToSuccessfulChallenge">
 		<%= render(:partial => "games/react_to_successfull_challenge") %>
 	</div>
-
 	<div id="displayBlockInfo">
-
 	</div>
-
 	<div class="hidden" id="reactToBlockContessa">
 		<%= render(:partial => "games/react_to_block", locals: {card: "Contessa"}) %>
 	</div>
@@ -83,10 +67,9 @@ Revealed Cards:<br>
 		<%= render(:partial => "games/react_to_exchange") %>
 	</div>
 </div>
-
 <div class="your-cards">
 Your Cards: <br>
-<% if current_user.cards.length > 0 %>
+<% if current_user.cards.length > 0 || current_user.game_id == nil %>
 	<% current_user.cards.each do |card| %>
 		<%= card.card_type %>
 	<% end %>
@@ -96,14 +79,12 @@ Your Cards: <br>
 	</script>
 <% end %>
 </div>
-
 <%= javascript_tag do %>
 	window.game = JSON.parse("<%= @game.to_json %>".replace(/&quot;/g,'"'));
 	window.current_user = JSON.parse("<%= current_user.to_json %>".replace(/&quot;/g,'"'))
 	window.challenge_url = "<%= challenge_url %>"
 <% end %>
 <%= javascript_include_tag "show" %>
-
 <script>
 	function challengeAction(card, action){
     	$.ajax({
