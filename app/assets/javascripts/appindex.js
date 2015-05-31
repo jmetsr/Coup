@@ -1,8 +1,7 @@
-app.controller('MainController', function($scope, serverInteraction) {
+app.controller('MainController', ["$scope", "serverInteraction", function($scope, serverInteraction) {
 	$scope.users = ['fvsrtb'];
 	$scope.otherUsers = [];
 	
-
 	$scope.getUsers = function() {
 		serverInteraction.makeRequestToGetUserData().success(function(data){
 			console.log(data)
@@ -11,7 +10,6 @@ app.controller('MainController', function($scope, serverInteraction) {
 		}) 
 	}
 	$scope.getUsers();
-
 
 	$scope.proposeGame = function () {
 		var potentialOpponents = [];
@@ -72,10 +70,7 @@ app.controller('MainController', function($scope, serverInteraction) {
 	}
 	$scope.proposer = [];
 	$scope.accepter = "dscs";
-	
-
-
-});
+}]);
 
 app.config(function($routeProvider) {
 	$routeProvider
