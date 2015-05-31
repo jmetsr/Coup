@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
     if @game.current_player == @game.users.order("id").last
       @game.current_player_id = @game.users.order("id").first.id
     else
-      current_player_number = indexx(@game.current_player.id,@game.users.order("id").map{|user| user.id})
+      current_player_number = indexx(@game.current_player.id,@game.users.order("id").map{|user| user.id})+1
       @game.current_player_id = @game.users.order("id")[current_player_number].id
     end
     @game.active_player_id = @game.current_player_id
@@ -82,7 +82,7 @@ class ApplicationController < ActionController::Base
   def indexx(param, array)
     array.each_with_index do |el,index|
       if param <= el
-        return index - 1 
+        return index 
       end
     end
     return array.length - 1
