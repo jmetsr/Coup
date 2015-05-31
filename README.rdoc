@@ -1,3 +1,5 @@
 A Rails App using AngularJS on the front end that allows users to play The game Coup
 featured here: http://www.boardgamequest.com/coup-card-game-review/
-The app is still a work in progress and is not yet live
+The app is still a work in progress.
+The live link is at http://playcoup.herokuapp.com/
+
