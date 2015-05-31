@@ -1,5 +1,5 @@
 app = angular.module("coup", ['ngRoute', 'templates']);
-app.factory('serverInteraction', function($http){
+app.factory('serverInteraction', ['$http', function($http){
 	return {
 		makeRequestToGetUserData: function() {
 			return $http.get("/users");
@@ -23,4 +23,4 @@ app.factory('serverInteraction', function($http){
 
 	}
 
-})
+}])
