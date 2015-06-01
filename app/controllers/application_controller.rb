@@ -20,6 +20,12 @@ class ApplicationController < ActionController::Base
       fail
     end
   end
+  def require_playing_the_game
+    @game = Game.find(params[:id])
+    unless current_user.game_id == Integer(params[:id])
+      fail
+    end
+  end
   def take_money(amount, player)
     player.money += amount
     player.save
@@ -46,7 +52,12 @@ class ApplicationController < ActionController::Base
       @game.current_player_id = @game.users.order("id").first.id
     else
       current_player_number = indexx(@game.current_player.id,@game.users.order("id").map{|user| user.id})+1
-      @game.current_player_id = @game.users.order("id")[current_player_number].id
+      if @game.users.order("id")[current_player_number] != nil
+        @game.current_player_id = @game.users.order("id")[current_player_number].id
+      else
+        @game.current_player_id = @game.users.order("id").first.id
+      end
+
     end
     @game.active_player_id = @game.current_player_id
     @game.record("---#{@game.current_player.nickname}'s turn---.")

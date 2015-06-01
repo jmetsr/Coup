@@ -97,4 +97,9 @@ Your Cards: <br>
     	})
 	}
 </script>
-
+<% if current_user.game_id == nil %>
+	<script>
+		pusher.unsubscribe("game_channel_number_" + game.id );
+		location = "/static_pages/you_lose";
+	</script>
+<% end %>

@@ -1,5 +1,6 @@
 class TurnLogicsController < ApplicationController
 	before_filter :require_your_turn, only: [:take_income, :take_foreign_aid, :tax, :steal, :coup, :assassin, :exchange]
+  before_filter :require_playing_the_game, except: [:deal_cards]
   def take_income
     take_money(1, @game.current_player)    
     @game.record("#{@game.current_player.nickname} took income.")
@@ -41,7 +42,7 @@ class TurnLogicsController < ApplicationController
       render :template => "static_pages/you_lose"
       switch_turns
       switch_turns if @game.current_player == current_user
-      
+
       Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
         message: "turn over"})
     else
