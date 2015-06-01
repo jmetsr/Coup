@@ -56,14 +56,15 @@ app.controller('MainController', ["$scope", "serverInteraction", function($scope
 		serverInteraction.join(data,id).
 			success(function(result){
 				console.log("success");
+				console.log(result)
 				$scope.game = result.game_id
 				$scope.apply
-				for (i=0; i<50000000; i++){}
+				for (i=0; i<50000000; i++){}		
 				window.location = "/games/" + $scope.game
-				$scope.apply
+				$scope.apply			
 			}).
 			error(function(){  //if its an error, wait a bit and try again
-				for (i=0; i<1000000; i++){}
+				for (i=0; i<50000000; i++){}
 				$scope.join(data,id)
 			//recursivly call the function
 			});

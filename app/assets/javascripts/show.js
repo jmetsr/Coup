@@ -1,5 +1,4 @@
 window["channel: " + game.id ] = pusher.subscribe("game_channel_number_" + game.id );
-
 window["channel: " + game.id ].bind('game_data_for_' +  game.id , function(data) {
 	if (data.message[0] == "t"){    //a turn ended
 		location.reload();

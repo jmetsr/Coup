@@ -24,18 +24,20 @@ class TurnLogicsController < ApplicationController
   def deal_cards
     puts "we are in the deal cards method"
     @game = Game.find(params[:id])
-    puts "the players of the game are..."
-    @game.users.each do |user|
-      puts "player: #{user.nickname}"
-      2.times do
-        @card = @game.cards.select{|x| x.is_in_deck}.sample
-        @card.deal(user)
-        puts "User #{user.nickname} was delt a #{card.card_type}"
-      end
-    end
-    puts "we delt the cards"
-   	Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
-      message: "cards dealt"})
+    # puts "the players of the game are..."
+    # @game.users.each do |user|
+    #   puts "player: #{user.nickname}"
+    #   2.times do
+    #     @card = @game.cards.select{|x| x.is_in_deck}.sample
+    #     @card.deal(user)
+    #     puts "User #{user.nickname} was delt a #{@card.card_type}"
+    #   end
+    # end
+    # puts "we delt the cards"
+     @game.is_delt = true 
+     @game.save
+    # Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+    #   message: "cards dealt"})
     render :json => @game
   end
   def kill

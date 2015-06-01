@@ -43,7 +43,7 @@ channel.bind('my_event', function(data) {
 			console.log(getMyId())
 			data = JSON.stringify({"id": getMyId(), "accepter_id": controllerScope.accepter})
 			controllerScope.join(data,getMyId())
-			clearTimeout(logout) //we want to make sure we don't logout users durring games
+		
 			
 			
 			// window.location = "/games/" + controllerScope.game

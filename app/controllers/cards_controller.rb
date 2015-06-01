@@ -1,6 +1,7 @@
 class CardsController < ApplicationController
 
 	def build_deck
+		Game = @game = Game.find(params[:id])
 		puts "we are about to build the deck"
 		add_card_type("Captin")
 		add_card_type("Duke")
@@ -8,6 +9,9 @@ class CardsController < ApplicationController
 		add_card_type("Assassin")
 		add_card_type("Ambassador")
 		puts "we built the deck"
+		@game.is_built = true
+		@game.save
+    end
 		redirect_to(deal_cards_url(params[:id]))
 	end
 

@@ -41,15 +41,33 @@ class GamesController < ApplicationController
 	end
   def create  
     @game = Game.new(number_of_players: params["_json"].to_i)
+
     @game.current_player_id = current_user.id
     @game.active_player_id = current_user.id
+    @game.is_delt = false
+    @game.is_built = true
     @game.log = "---#{@game.current_player.nickname}'s turn---."
     @game.save
+    add_card_type("Captin", @game.id)
+    add_card_type("Duke", @game.id)
+    add_card_type("Contessa", @game.id)
+    add_card_type("Assassin", @game.id)
+    add_card_type("Ambassador", @game.id)
+    @game.save
     puts "we are about to redirect to the deal cards method"
-    redirect_to :controller => 'cards', :action => 'build_deck', :id => @game.id
+
+    render :json => @game
   end
   def show
     @game = Game.find(params[:id])
     render :show
+  end
+
+  private
+  def add_card_type(string, id)
+    3.times do
+      card = Card.new(game_id: id, is_in_deck: true, card_type: string, is_dead: false)
+      card.save
+    end
   end
 end

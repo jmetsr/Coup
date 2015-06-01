@@ -34,19 +34,30 @@ class UsersController < ApplicationController
   end
 
   def update
+
     @user = User.find(params[:id])
     @user.money = 2;
     game = Game.find_by_current_player_id(params[:accepter_id])
-    @user.game_id = game.id
-    @user.save
-    game.save
-    puts "#{@user} joined the game"
-    render :json => @user
+    if game.is_built
+      @user.game_id = game.id
+      @user.save
+      game.save
+      puts "#{@user} joined the game"
+      if @user.cards.length == 0
+        2.times do
+          @card = game.cards.select{|x| x.is_in_deck}.sample
+          @card.deal(@user)
+        end
+      end
+      render :show
+    else
+      fail
+    end
   end
 
   def show
     @user = User.find(params[:id])
-    render :json => @user
+    render :show
   end
 
 end
