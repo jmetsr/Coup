@@ -24,7 +24,9 @@ class TurnLogicsController < ApplicationController
   def deal_cards
     puts "we are in the deal cards method"
     @game = Game.find(params[:id])
+    puts "the players of the game are..."
     @game.users.each do |user|
+      puts "player: #{user.nickname}"
       2.times do
         @card = @game.cards.select{|x| x.is_in_deck}.sample
         @card.deal(user)
