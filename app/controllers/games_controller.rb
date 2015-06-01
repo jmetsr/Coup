@@ -45,6 +45,7 @@ class GamesController < ApplicationController
     @game.active_player_id = current_user.id
     @game.log = "---#{@game.current_player.nickname}'s turn---."
     @game.save
+    puts "we are about to redirect to the deal cards method"
     redirect_to :controller => 'cards', :action => 'build_deck', :id => @game.id
   end
   def show

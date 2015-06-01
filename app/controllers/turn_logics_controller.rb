@@ -22,6 +22,7 @@ class TurnLogicsController < ApplicationController
     redirect_to(end_turn_url)
   end
   def deal_cards
+    puts "we are in the deal cards method"
     @game = Game.find(params[:id])
     @game.users.each do |user|
       2.times do
@@ -29,6 +30,7 @@ class TurnLogicsController < ApplicationController
         @card.deal(user)
       end
     end
+    puts "we delt the cards"
    	Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
       message: "cards dealt"})
     render :json => @game
