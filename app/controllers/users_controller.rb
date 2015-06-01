@@ -40,6 +40,7 @@ class UsersController < ApplicationController
     @user.game_id = game.id
     @user.save
     game.save
+    puts "#{@user} joined the game"
     render :json => @user
   end
 

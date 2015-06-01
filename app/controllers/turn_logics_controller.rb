@@ -28,6 +28,7 @@ class TurnLogicsController < ApplicationController
       2.times do
         @card = @game.cards.select{|x| x.is_in_deck}.sample
         @card.deal(user)
+        puts "User #{user.nickname} was delt a #{card.card_type}"
       end
     end
     puts "we delt the cards"
