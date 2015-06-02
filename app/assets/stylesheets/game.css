@@ -30,3 +30,22 @@
 	display: inline-block;
 }
 .hidden {}
+
+.cheat-sheet {
+	text-align: center;	
+	position: relative;
+	left: 50%;
+	bottom: 100px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+td {
+	padding: 5px;
+	font-size: 80%;
+}

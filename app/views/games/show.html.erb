@@ -17,6 +17,140 @@ Revealed Cards:<br>
 </ul>
 </div>
 <br>
+<div class="cheat-sheet">
+	<table>
+		<tr>
+			<th>
+				Character
+			</th>
+			<th>
+				Action
+			</th>
+			<th>
+				Effect
+			</th>
+			<th>
+				Reaction
+			</th>
+		</tr>
+		<tr>
+			<td>
+				---
+			</td>
+			<td>
+				Income
+			</td>
+			<td>
+				Take 1 Coin
+			</td>
+			<td>
+				X
+			</td>
+		</tr>
+		<tr>
+			<td>
+				---
+			</td>
+			<td>
+				Foreign aid
+			</td>
+			<td>
+				Take 2 coins
+			</td>
+			<td>
+				X
+			</td>
+		</tr>
+		<tr>
+			<td>
+				---
+			</td>
+			<td>
+				Coup
+			</td>
+			<td>
+				Pay 7 coins <br>
+				Choose player to lose influence
+			</td>
+			<td>
+				X
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Duke
+			</td>
+			<td>
+				Tax
+			</td>
+			<td>
+				Take 3 coins
+			</td>
+			<td>
+				Blocks Foreign Aid
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Assassin
+			</td>
+			<td>
+				Assassinate
+			</td>
+			<td>
+				Pay 3 coins <br>
+				Choose player to lose influence
+			</td>
+			<td>
+				X
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Ambassador
+			</td>
+			<td>
+				Exchange
+			</td>
+			<td>
+				Exchange cards <br>with Court Deck
+			</td>
+			<td>
+				Blocks stealing
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Captin
+			</td>
+			<td>
+				Steal
+			</td>
+			<td>
+				Take 2 coins <br>
+				from another player
+			</td>
+			<td>
+				Blocks stealing
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Contessa
+			</td>
+			<td>
+				X
+			</td>
+			<td>
+				X
+			</td>
+			<td>
+				Blocks assassination
+			</td>
+		</tr>
+
+	</table>
+</div>
 <div class="input">
 	<% if @game.current_player == current_user && @game.active_player == current_user%>
 		<%= render(:partial => "games/your_turn") %> 
