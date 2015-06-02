@@ -11,7 +11,7 @@ class CardsController < ApplicationController
 		puts "we built the deck"
 		@game.is_built = true
 		@game.save
-    end
+    
 		redirect_to(deal_cards_url(params[:id]))
 	end
 
