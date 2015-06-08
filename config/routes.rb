@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   root to: 'static_pages#root'
 
   get 'static_pages/you_lose' => 'static_pages#you_lose', :as => 'you_lose'
+  get 'static_pages/you_win' => 'static_pages#you_win', :as => 'you_win'
   resources :users, defaults: {format: :json}
 
   post 'games/propose', :to => 'games#propose'

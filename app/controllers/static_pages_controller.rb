@@ -4,4 +4,7 @@ class StaticPagesController < ApplicationController
   def you_lose
   	render :you_lose
   end
+  def you_win
+  	render :you_win
+  end
 end

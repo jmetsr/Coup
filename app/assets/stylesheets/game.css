@@ -19,9 +19,10 @@
 	position: relative;
 	right: 24%;
 	text-align: center;
-	bottom: 50px;
+	bottom: 250px;
 	text-decoration: none;
 	border-radius: none;
+
 }
 .your-cards {
 	border-top: 2px solid black;
@@ -34,8 +35,8 @@
 .cheat-sheet {
 	text-align: center;	
 	position: relative;
-	left: 50%;
-	bottom: 100px;
+	left: 54%;
+	bottom: 80px;
 }
 
 table {

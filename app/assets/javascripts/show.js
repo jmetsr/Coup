@@ -6,6 +6,9 @@ window["channel: " + game.id ].bind('game_data_for_' +  game.id , function(data)
 	if (data.message[0] == "c"){    //cards finished dealing
 		location.reload();	
 	}
+	if (data.message[0] == "y"){    //you win
+		window.location = '/static_pages/you_win'
+	}
 	if (((JSON.parse(data.message)).action === "coup") && ((JSON.parse(data.message)).opponent == current_user.nickname)){
 		 document.getElementById('reactToCoup').className = ""
 	}
