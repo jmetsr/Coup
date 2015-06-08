@@ -35,10 +35,12 @@ class UsersController < ApplicationController
 
   def update
 
+    puts 'entered users update action'
     @user = User.find(params[:id])
     @user.money = 2;
     game = Game.find_by_current_player_id(params[:accepter_id])
     if game.is_built
+      puts 'game was built'
       @user.game_id = game.id
       @user.save
       game.save
@@ -51,6 +53,7 @@ class UsersController < ApplicationController
       end
       render :show
     else
+      puts "game wasn't built"
       fail
     end
   end
