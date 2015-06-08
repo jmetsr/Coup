@@ -37,8 +37,11 @@ class UsersController < ApplicationController
 
     puts 'entered users update action'
     @user = User.find(params[:id])
+    puts 'identified user'
     @user.money = 2;
+    puts 'game him money'
     game = Game.find_by_current_player_id(params[:accepter_id])
+    puts 'ser the game'
     if game.is_built
       puts 'game was built'
       @user.game_id = game.id

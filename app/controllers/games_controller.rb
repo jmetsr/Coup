@@ -40,6 +40,7 @@ class GamesController < ApplicationController
     render :json => params
 	end
   def create  
+    puts 'game create action entered'
     @game = Game.new(number_of_players: params["_json"].to_i)
     @game.chat = ""
     @game.current_player_id = current_user.id
