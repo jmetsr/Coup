@@ -41,7 +41,7 @@ class GamesController < ApplicationController
 	end
   def create  
     @game = Game.new(number_of_players: params["_json"].to_i)
-
+    @game.chat = ""
     @game.current_player_id = current_user.id
     @game.active_player_id = current_user.id
     @game.is_delt = false
@@ -61,6 +61,15 @@ class GamesController < ApplicationController
   def show
     @game = Game.find(params[:id])
     render :show
+  end
+  def chat
+    @game = Game.find(params[:id])
+    info = "#{current_user.nickname}: #{params[:message]}."
+    @game.chat += info
+    Pusher["game_channel_number_" + @game.id.to_s ].trigger("game_data_for_#{@game.id}", {
+      :message => "T: #{info}" })
+    @game.save
+    render :json => @game
   end
 
   private

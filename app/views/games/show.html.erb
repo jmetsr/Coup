@@ -200,6 +200,27 @@ Revealed Cards:<br>
 	<div class="hidden" id="reactToExchange">
 		<%= render(:partial => "games/react_to_exchange") %>
 	</div>
+	--- Chat ---<br>
+
+<!-- 	<form action="<%= chat_url %>" method="post">
+	Type your words <br>
+		<input type="hidden" name="id" value="<%= @game.id %>">
+
+		<input type="text" name="message">
+		<input type="Submit" value="Chat">	
+
+	</form> -->
+	Type your words <br>
+	<input type="text" name="message" id="chatbox">
+	<button onclick="talk()"> Chat</button>
+
+</div>
+<div class="chat" id="chat">
+
+<% @game.chat.split(".").each do |line| %>
+	<%= line %> <br>
+<% end %>
+
 </div>
 <div class="your-cards">
 Your Cards: <br>
@@ -235,3 +256,15 @@ Your Cards: <br>
 		location = "/static_pages/you_lose";
 	</script>
 <% end %>
+<script>
+	talk = function(){
+		$.ajax({
+			url: "/games/chat/<%= @game.id %>",
+			type: "POST",
+			data: {
+				message: document.getElementById("chatbox").value
+			},
+			dataType: 'json'
+		})
+	}
+</script>

@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   post 'games/propose', :to => 'games#propose'
   get 'games/accept' => 'games#accept', :as => 'accept'
   get 'games/reject' => 'games#reject', :as => 'reject'
+  post 'games/chat/:id' => 'games#chat', :as => 'chat'
   
   resources :games, :except => :show, defaults: {format: :json}
   resources :games, :only => :show

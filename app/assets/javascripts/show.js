@@ -9,6 +9,10 @@ window["channel: " + game.id ].bind('game_data_for_' +  game.id , function(data)
 	if (data.message[0] == "y"){    //you win
 		window.location = '/static_pages/you_win'
 	}
+	if (data.message[0] === "T"){
+		document.getElementById("chat").innerHTML +=  data.message.substring(3) + "<br>"
+		console.log(data.message + "")
+	}
 	if (((JSON.parse(data.message)).action === "coup") && ((JSON.parse(data.message)).opponent == current_user.nickname)){
 		 document.getElementById('reactToCoup').className = ""
 	}
@@ -59,6 +63,8 @@ window["channel: " + game.id ].bind('game_data_for_' +  game.id , function(data)
 		 document.getElementById('reactToExchange').className = ""
 	}
 
-	console.log(data.message)
 
 })
+Pusher.log = function(msg){
+	console.log(msg)
+}
