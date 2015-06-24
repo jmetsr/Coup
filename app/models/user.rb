@@ -104,8 +104,10 @@ class User < ActiveRecord::Base
     self.save
   end
   def reset_allow
-    self.is_allowing = false
-    self.save
+    unless self.is_bot
+      self.is_allowing = false
+      self.save
+    end
   end
   def leave_the_game
     self.game_id = nil

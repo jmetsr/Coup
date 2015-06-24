@@ -1,6 +1,7 @@
 app.controller('MainController', ["$scope", "serverInteraction", function($scope, serverInteraction) {
 	$scope.users = ['fvsrtb'];
 	$scope.otherUsers = [];
+	$scope.botIds = []
 	
 	$scope.getUsers = function() {
 		serverInteraction.makeRequestToGetUserData().success(function(data){

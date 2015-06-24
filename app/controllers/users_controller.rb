@@ -4,6 +4,43 @@ class UsersController < ApplicationController
     current_user && current_user.reject
     @users = User.all
 		render :index
+    bots = User.all.select{|user| user.is_bot }
+    if bots.length == 0
+      @user = User.new(nickname: "Bot 1")
+      @user.is_blocking = false
+      @user.is_allowing = true
+      @user.accepted = true
+      @user.is_bot = true
+      @user.save
+      @user2 = User.new(nickname: "Bot 2")
+      @user2.is_blocking = false
+      @user2.is_allowing = true
+      @user2.accepted = true
+      @user2.is_bot = true
+      @user2.save
+
+    else
+      puts "there are alredy bots"
+      last_bot_so_far = bots.sort_by{|user| user.created_at}.last
+      name = last_bot_so_far.nickname 
+      # create a new bot with a new name
+      new_name = "Bot " + String(Integer(name[4..-1])+1)
+      @user = User.new(nickname: new_name)
+      @user.is_blocking = false
+      @user.is_allowing = true
+      @user.accepted = true
+      @user.is_bot = true
+      puts "about to save a bot"
+      @user.save
+      @user2 = User.new(nickname: "Bot " + String(Integer(new_name[4..-1])+1))
+      @user2.is_blocking = false
+      @user2.is_allowing = true
+      @user2.accepted = true
+      @user2.is_bot = true
+      puts "about to save another bot"
+      @user2.save
+    end
+
 	end
 
   def user_params
@@ -15,6 +52,7 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
     @user.is_blocking = false
     @user.is_allowing = false
+    @user.is_bot = false
     if @user.save
       login(@user)
       Pusher['test_channel'].trigger('my_event', {

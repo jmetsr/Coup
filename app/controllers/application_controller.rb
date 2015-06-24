@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
   end
   def require_your_turn
     @game = Game.find(params[:id])
-    unless @game.current_player == current_user
+    unless @game.current_player == current_user || @game.current_player.is_bot
       fail
     end
   end
@@ -36,13 +36,42 @@ class ApplicationController < ActionController::Base
   end
 
   def preform_action(cost, type, action_type)
+    @game = Game.find(params[:id])
     take_money(-cost, @game.current_player)
     @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
     @game.active_player_id = @opponent.id
     @game.record("#{@game.current_player.nickname} #{type} #{@opponent.nickname}.")
     Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
       message: {action: action_type, opponent: "#{@opponent.nickname}"}.to_json})
-    redirect_to(game_url(@game))
+    if @opponent.is_bot
+      if action_type == "theft"
+        redirect_to resolve_theft_url(@game)
+      elsif action_type == "coup"
+        #kill the bot
+        @card_to_remove = @opponent.cards.sample
+        @card_to_remove.remove
+        @opponent.put_back_card(@card_to_remove)
+        if @opponent.cards.length == 0
+          @opponent.leave_the_game
+     
+        switch_turns
+        switch_turns if @game.current_player == @opponent
+
+        Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: "turn over"})
+      else
+        redirect_to(end_turn_url)
+      end
+      if @game.users.length == 0
+        Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: "you win"})
+      end  
+
+        #kill the bot
+      end
+    else
+      redirect_to(game_url(@game))
+    end
   end
 
   def switch_turns
@@ -72,11 +101,36 @@ class ApplicationController < ActionController::Base
     attempt_to_do(action, "took #{action}")
   end
   def attempt_to_do(action, verb)
+    puts "entered the attempt to do method"
+    @game = Game.find(params[:id])
     @game.active_player_id = nil
     @game.record("#{@game.current_player.nickname} #{verb}.")
     Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
       message: {action: "#{action}", opponent: "#{current_user.nickname}"}.to_json})
-    redirect_to(game_url(@game))
+    if @game.users.select{|user| user != @game.current_player}.all?{ |player| player.is_bot }
+      if action == "exchange"
+        redirect_to resolve_exchange_url(@game)
+      elsif action == "tax"
+        redirect_to resolve_tax_url(@game)
+      elsif action == "foreign aid"
+        redirect_to resolve_foreign_aid_url(@game)
+      end
+    else
+      if !@game.current_player.is_bot
+        puts 'current_player is not a bot'
+        redirect_to(game_url(@game))
+      else
+        puts 'current_player is a bot'
+        
+        Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+          message: {action: "#{action}", opponent: "#{@game.current_player.nickname}"}.to_json})
+        sleep(10)
+        puts 'we sent the pusher message'
+        redirect_to game_url(@game, :action => action)
+
+  
+      end
+    end
   end
   def resolve(relevant_player, &block)
     @game = Game.find(params[:id])
@@ -88,6 +142,10 @@ class ApplicationController < ActionController::Base
     else
       redirect_to(game_url(@game))
     end
+  end
+  def redirect_to(options = {}, response_status = {})
+    ::Rails.logger.error("Redirected by #{caller(1).first rescue "unknown"}")
+    super(options, response_status)
   end
   private
   def indexx(param, array)

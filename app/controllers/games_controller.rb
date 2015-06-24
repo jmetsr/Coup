@@ -23,8 +23,13 @@ class GamesController < ApplicationController
 
     all_accepted = current_user.potential_opponents.all? {|user| user.accepted}
     numb_players = current_user.potential_opponents.length
+    bot_ids = current_user.potential_opponents.select{|opp| opp.is_bot }.map{|bot| bot.id}
+    puts "current_user.potential_opponents: #{current_user.potential_opponents}"
+    puts "bot Ids: #{bot_ids}"
+    bot_ids_string = bot_ids.inject{|x,y| String(x)+"."+String(y)}
+    puts "bot Ids string: #{bot_ids_string}"
 		Pusher['test_channel'].trigger('my_event', {
-          message: "accepts #{current_user.id}, number_of_opponents = #{numb_players}, everyone accepted: #{all_accepted}"})
+          message: "accepts #{current_user.id}, number_of_opponents = #{numb_players}, everyone accepted: #{all_accepted}, bot_ids- #{bot_ids_string}" })
     render :json => params
 	end
 
@@ -41,27 +46,41 @@ class GamesController < ApplicationController
 	end
   def create  
     puts 'game create action entered'
-    @game = Game.new(number_of_players: params["_json"].to_i)
+    puts params
+    @game = Game.new(number_of_players: params["numbplays"])
     @game.chat = ""
     @game.current_player_id = current_user.id
     @game.active_player_id = current_user.id
     @game.is_delt = false
     @game.is_built = true
     @game.log = "---#{@game.current_player.nickname}'s turn---."
+
     @game.save
     add_card_type("Captin", @game.id)
     add_card_type("Duke", @game.id)
     add_card_type("Contessa", @game.id)
     add_card_type("Assassin", @game.id)
     add_card_type("Ambassador", @game.id)
+    @bots = User.all.select{|user| params["botIds"].include?(user.id) }
+    @bots.each do |bot|
+      bot.money = 2
+      bot.game_id = @game.id
+      bot.save
+      2.times do
+        @card = @game.cards.select{|x| x.is_in_deck }.sample
+        @card.deal(bot) 
+      end
+
+    end
     @game.save
-    puts "we are about to redirect to the deal cards method"
+
 
     render :json => @game
   end
   def show
     @game = Game.find(params[:id])
     render :show
+    
   end
   def chat
     @game = Game.find(params[:id])

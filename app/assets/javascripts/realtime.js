@@ -21,14 +21,20 @@ channel.bind('my_event', function(data) {
 		controllerScope.accepter = accepterId
 		document.getElementById("text").innerHTML += acceptence;
 		string = data.message
-		if (string.substring(string.indexOf(":")+2)  === "true"){
+		if (string.substring(string.indexOf(":")+2).startsWith("true")){
 			console.log("weve all accepted!!!");
+			console.log(string)
 
 			console.log(accepterId )
 			console.log(getMyId())
 			if (accepterId === getMyId()){
 				var numberOfPlayers = parseInt(string.substring(string.indexOf("=")+2));
-				controllerScope.startGame(numberOfPlayers);
+				botIds = []
+				botIdStrings = string.substring(string.indexOf("-")+2).split('.')
+		
+				botIdStrings.forEach(function(x){ botIds.push(parseInt(x))})
+	
+				controllerScope.startGame({numbplays: numberOfPlayers, botIds: botIds });
 				console.log("we accepted it")
 			} 
 			for (i=0; i<4000000; i++){} //wait for the game to be created

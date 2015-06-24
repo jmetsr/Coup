@@ -108,9 +108,34 @@ class TurnLogicsController < ApplicationController
     end
   end
   def end_turn
+    puts "we are in end_turn method"
     switch_turns
-    Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
-      message: "turn over"})
-    redirect_to(game_url(@game))
+    puts "we switched the turns"
+
+    puts "we sent the message"
+    if @game.current_player.is_bot
+      puts "we a bot"
+      possible_moves = ['income', 'foreign aid', 'tax', 'exchange']
+      if @game.current_player.money >= 3
+        possible_moves << 'assassinate'
+      end
+      move = possible_moves.sample
+      if move == 'income'
+        redirect_to take_income_url(@game)
+      elsif move == 'foreign aid'
+        redirect_to take_foreign_aid_url(@game)
+      elsif move == 'tax'
+        redirect_to tax_url(@game)
+      elsif move == 'exchange'
+        redirect_to exchange_url(@game)
+      end
+
+    else
+      puts 'we not a bot'
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+        message: "turn over"})
+
+      redirect_to(game_url(@game))
+    end
   end
 end

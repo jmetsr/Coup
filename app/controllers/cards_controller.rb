@@ -1,6 +1,6 @@
 class CardsController < ApplicationController
 
-	def build_deck
+	def build_deck # we can delete this method now
 		@game = Game.find(params[:id])
 		puts "we are about to build the deck"
 		add_card_type("Captin")
