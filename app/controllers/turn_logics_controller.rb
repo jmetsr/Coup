@@ -106,7 +106,7 @@ class TurnLogicsController < ApplicationController
         end
         
       
-        if @game.users.length == 0
+        if @game.users.length == 1
           Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
             message: "you win"})
         end  
