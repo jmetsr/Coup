@@ -65,6 +65,7 @@ class TurnLogicsController < ApplicationController
     redirect_to(game_url(@game))
   end
   def challenge
+    puts "we are in the challenge method"
 		@game = Game.find(params[:id])
     @card = params[:card]
     @game.record("#{current_user.nickname} challenges.")
@@ -91,7 +92,31 @@ class TurnLogicsController < ApplicationController
       Pusher["game_channel_number_" + @game.id.to_s].trigger('game_data_for_' + @game.id.to_s, {
         message: {action: "challenge", player: "#{challenged.nickname}", result: "succeede"}.to_json})
       @game.record("challenge succeeds.")
-      render :template => "games/show"
+      if challenged.is_bot
+        #kill the bot
+        puts "the bot should be killed"
+        @card_to_remove = challenged.cards.sample
+        @card_to_remove.remove
+        challenged.put_back_card(@card_to_remove)
+        if challenged.cards.length == 0
+          puts "the opponent has no cards"
+          challenged.leave_the_game
+          switch_turns
+          switch_turns if @game.current_player == @opponent
+        end
+        
+      
+        if @game.users.length == 0
+          Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+            message: "you win"})
+        end  
+        redirect_to(end_turn_url)
+
+        #kill the bot
+
+      else
+        render :template => "games/show"
+      end
     end
  	end
   def resolve_exchange
@@ -116,9 +141,7 @@ class TurnLogicsController < ApplicationController
     if @game.current_player.is_bot
       puts "we a bot"
       possible_moves = ['income', 'foreign aid', 'tax', 'exchange']
-      if @game.current_player.money >= 3
-        possible_moves << 'assassinate'
-      end
+
       move = possible_moves.sample
       if move == 'income'
         redirect_to take_income_url(@game)
@@ -135,7 +158,7 @@ class TurnLogicsController < ApplicationController
       Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
         message: "turn over"})
 
-      redirect_to(game_url(@game))
+      redirect_to :controller => 'games', :action => 'show', :id => @game.id, :my_action => nil
     end
   end
 end

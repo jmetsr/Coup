@@ -156,6 +156,7 @@ Revealed Cards:<br>
 		<%= render(:partial => "games/your_turn") %> 
 		<!-- contains logic for moves you can make on your turn -->
 	<% end %>
+
 	<div class="hidden" id="reactToCoup">
 		<%= render(:partial => "games/react_to_coup") %>
 	</div>
@@ -174,10 +175,10 @@ Revealed Cards:<br>
 	<div class="hidden" id="reactToTheft">
 		<%= render(:partial => "games/react_to_theft") %>
 	</div>
-	<div class="hidden" id="reactToForeignAid">
+	<div class="<%= params[:action] && params[:my_action] == 'foreignaid' && @game.current_player != current_user ? '' : 'hidden' %>" id="reactToForeignAid">
 		<%= render(:partial => "games/react_to_foreign_aid") %>
 	</div>
-	<div class="hidden" id="reactToTax">
+	<div class="<%= params[:action] && params[:my_action] == 'tax' && @game.current_player != current_user ? '' : 'hidden' %>" id="reactToTax">
 		<%= render(:partial => "games/react_to_tax") %>
 	</div>
 	<div class="hidden" id="reactToSuccessfulChallenge">
@@ -197,7 +198,7 @@ Revealed Cards:<br>
 	<div class="hidden" id="reactToBlockTheftAmbassador">
 		<%= render(:partial => "games/react_to_block", locals: {card: "Ambassador"}) %>
 	</div>
-	<div class="hidden" id="reactToExchange">
+	<div class="<%= params[:action] && params[:my_action] == 'exchange' && @game.current_player != current_user ? '' : 'hidden' %>" id="reactToExchange">
 		<%= render(:partial => "games/react_to_exchange") %>
 	</div>
 	--- Chat ---<br>

@@ -36,6 +36,7 @@ class ApplicationController < ActionController::Base
   end
 
   def preform_action(cost, type, action_type)
+    puts "We are in the preform  action method"
     @game = Game.find(params[:id])
     take_money(-cost, @game.current_player)
     @opponent = @game.users.select{|user| user != current_user && user.nickname == params[:opponent]}[0]
@@ -44,22 +45,24 @@ class ApplicationController < ActionController::Base
     Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
       message: {action: action_type, opponent: "#{@opponent.nickname}"}.to_json})
     if @opponent.is_bot
+      puts "our opponent is a bot"
       if action_type == "theft"
         redirect_to resolve_theft_url(@game)
-      elsif action_type == "coup"
+      else
         #kill the bot
+        puts "the bot should be killed"
         @card_to_remove = @opponent.cards.sample
         @card_to_remove.remove
         @opponent.put_back_card(@card_to_remove)
         if @opponent.cards.length == 0
+          puts "the opponent has no cards"
           @opponent.leave_the_game
-     
-        switch_turns
-        switch_turns if @game.current_player == @opponent
+          switch_turns
+          switch_turns if @game.current_player == @opponent
+        end
 
-        Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
-          message: "turn over"})
-      else
+
+
         redirect_to(end_turn_url)
       end
       if @game.users.length == 0
@@ -68,7 +71,7 @@ class ApplicationController < ActionController::Base
       end  
 
         #kill the bot
-      end
+      
     else
       redirect_to(game_url(@game))
     end
@@ -121,12 +124,13 @@ class ApplicationController < ActionController::Base
         redirect_to(game_url(@game))
       else
         puts 'current_player is a bot'
-        
-        Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
-          message: {action: "#{action}", opponent: "#{@game.current_player.nickname}"}.to_json})
-        sleep(10)
+        if action != 'foreign aid'
+          redirect_to :controller => 'games', :action => 'show', :id => @game.id, :my_action => action
+        else
+          redirect_to :controller => 'games', :action => 'show', :id => @game.id, :my_action => 'foreignaid'
+        end
         puts 'we sent the pusher message'
-        redirect_to game_url(@game, :action => action)
+        
 
   
       end

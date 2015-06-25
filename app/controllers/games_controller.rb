@@ -78,8 +78,15 @@ class GamesController < ApplicationController
     render :json => @game
   end
   def show
+    puts params
     @game = Game.find(params[:id])
     render :show
+    if params[:my_action] != nil
+      Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
+        message: {action: "#{params[:my_action]}", opponent: "#{@game.current_player.nickname}"}.to_json})
+    end
+   
+    
     
   end
   def chat
