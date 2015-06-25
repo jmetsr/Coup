@@ -62,7 +62,11 @@ class TurnLogicsController < ApplicationController
     end
     Pusher["game_channel_number_" + @game.id.to_s ].trigger('game_data_for_' + @game.id.to_s, {
       message: {action: "block", opponent: "#{current_user.nickname}", card: "#{params[:card]}"}.to_json, card: params[:card] })
-    redirect_to(game_url(@game))
+    if !@game.current_player.is_bot
+      redirect_to(game_url(@game))
+    else
+      redirect_to end_turn_url
+    end
   end
   def challenge
     puts "we are in the challenge method"
